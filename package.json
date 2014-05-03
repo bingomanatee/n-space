@@ -1,0 +1,33 @@
+{
+  "name": "n-space",
+  "version": "0.0.1",
+  "description": "a n-dimensional tracker",
+  "main": "n-space.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:bingomanatee/n-space.git"
+  },
+  "keywords": [
+    "space"
+  ],
+  "author": "Dave Edelhart",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bingomanatee/n-space/issues"
+  },
+  "homepage": "https://github.com/bingomanatee/n-space",
+  "dependencies": {
+    "lodash": "~2.4.1",
+    "fools": "0.0.9"
+  },
+  "devDependencies": {
+    "tap": "~0.4.9",
+    "grunt": "~0.4.4",
+    "grunt-contrib-concat": "~0.4.0",
+    "grunt-umd": "~1.7.3",
+    "grunt-contrib-jshint": "~0.10.0"
+  }
+}
