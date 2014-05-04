@@ -133,7 +133,23 @@ _.extend(NSPACE.Member.prototype, {
             this.endMoveAni(true);
         } else {
             this.from_stub.progress = this.to_stub.progress = this.progress = dur / this.move_msec;
+            this.emit('slide progress', this, this.slideLoc());
         }
+    },
+
+    slideLoc: function(){
+
+        var fromLoc = _.clone(this.from_stub.loc);
+        var toLoc = _.clone(this.to_stub.loc);
+        var progress = this.progress;
+        var p2 = 1 - progress;
+        _.each(fromLoc, function(value, dim){
+            fromLoc[dim] = value * p2;
+            toLoc[dim] *= progress;
+            toLoc[dim] += fromLoc[dim];
+        });
+
+        return toLoc;
     },
 
     endMoveAni: function (moveToEnd, noEmit) {

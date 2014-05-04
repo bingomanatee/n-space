@@ -124,7 +124,6 @@ _.extend(NSPACE.WanderBot.prototype, {
         var gauntlet = Fools.gauntlet();
 
         gauntlet.if_last = function (input) {
-            console.log('no moves');
             return false;
         };
 
@@ -144,7 +143,7 @@ _.extend(NSPACE.WanderBot.prototype, {
         this.member.move(loc);
     },
 
-    move: function (time) {
+    move: function () {
         var openSpace = this.scan();
 
         if (!openSpace) {
@@ -153,6 +152,17 @@ _.extend(NSPACE.WanderBot.prototype, {
 
         this.member.move(openSpace.loc);
 
+    },
+
+    moveAni: function(time){
+
+        var openSpace = this.scan();
+
+        if (!openSpace) {
+            return;
+        }
+
+        this.member.moveAni(openSpace.loc, time);
     }
 
 });

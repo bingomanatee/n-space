@@ -592,7 +592,23 @@ _.extend(NSPACE.Member.prototype, {
             this.endMoveAni(true);
         } else {
             this.from_stub.progress = this.to_stub.progress = this.progress = dur / this.move_msec;
+            this.emit('slide progress', this, this.slideLoc());
         }
+    },
+
+    slideLoc: function(){
+
+        var fromLoc = _.clone(this.from_stub.loc);
+        var toLoc = _.clone(this.to_stub.loc);
+        var progress = this.progress;
+        var p2 = 1 - progress;
+        _.each(fromLoc, function(value, dim){
+            fromLoc[dim] = value * p2;
+            toLoc[dim] *= progress;
+            toLoc[dim] += fromLoc[dim];
+        });
+
+        return toLoc;
     },
 
     endMoveAni: function (moveToEnd, noEmit) {
@@ -743,7 +759,6 @@ _.extend(NSPACE.WanderBot.prototype, {
         var gauntlet = Fools.gauntlet();
 
         gauntlet.if_last = function (input) {
-            console.log('no moves');
             return false;
         };
 
@@ -763,7 +778,7 @@ _.extend(NSPACE.WanderBot.prototype, {
         this.member.move(loc);
     },
 
-    move: function (time) {
+    move: function () {
         var openSpace = this.scan();
 
         if (!openSpace) {
@@ -772,6 +787,17 @@ _.extend(NSPACE.WanderBot.prototype, {
 
         this.member.move(openSpace.loc);
 
+    },
+
+    moveAni: function(time){
+
+        var openSpace = this.scan();
+
+        if (!openSpace) {
+            return;
+        }
+
+        this.member.moveAni(openSpace.loc, time);
     }
 
 });
