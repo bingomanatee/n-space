@@ -38,14 +38,14 @@ tap.test('world', function (t) {
       }
 
       try {
-        new NSPACE.World({i: [1,3], j: [0, 2]});
+        new NSPACE.World({i: [1, 3], j: [0, 2]});
       } catch (err) {
         gd.ok(true, err);
         ++errors;
       }
 
       try {
-        new NSPACE.World({i: [1,1], j: [0, 2]});
+        new NSPACE.World({i: [1, 1], j: [0, 2]});
       } catch (err) {
         gd.ok(false, err);
         ++errors;
@@ -165,6 +165,37 @@ tap.test('world', function (t) {
 
       gl.end();
     });
+
+    tc.test('locInRange', function (lin) {
+      var inRange = 0;
+      var inRangeExpected = 0;
+      var tests = 0;
+
+      ++inRangeExpected;
+      ++tests;
+      inRange += world.locInRange({i: 0, j: 0}) ? 1 : 0;
+
+      ++inRangeExpected;
+      ++tests;
+      inRange += world.locInRange({i: 1, j: 1}) ? 1 : 0;
+
+      inRange += world.locInRange({i: 0, j: -1}) ? 1 : 0;
+      ++tests;
+
+      inRange += world.locInRange({i: -1, j: -1}) ? 1 : 0;
+      ++tests;
+
+      ++inRangeExpected;
+      inRange += world.locInRange({i: 2, j: 2}) ? 1 : 0;
+      ++tests;
+
+      inRange += world.locInRange({i: 2, j: 3}) ? 1 : 0;
+      ++tests;
+
+      lin.equal(inRange, inRangeExpected, inRangeExpected + ' locs in range in ' + tests + ' tests');
+      lin.end();
+    });
+
     tc.end();
 
   });
@@ -305,6 +336,134 @@ tap.test('world', function (t) {
     });
 
     a.end();
+  });
+
+  t.test('neighbors', function (n) {
+    var world = new NSPACE.World({x: [0, 5], y: [0, 5], z: [0, 5]});
+
+    var neighbors = world.neighbors({x: 2, y: 2, z: 2});
+
+    function _ser(n) {
+      return n.serialize();
+    }
+
+    var ns = neighbors.map(_ser);
+    n.deepEqual(ns, [
+      { z: 1, y: 1, x: 1, content: {} },
+      { z: 1, y: 1, x: 2, content: {} },
+      { z: 1, y: 1, x: 3, content: {} },
+      { z: 1, y: 2, x: 1, content: {} },
+      { z: 1, y: 2, x: 2, content: {} },
+      { z: 1, y: 2, x: 3, content: {} },
+      { z: 1, y: 3, x: 1, content: {} },
+      { z: 1, y: 3, x: 2, content: {} },
+      { z: 1, y: 3, x: 3, content: {} },
+      { z: 2, y: 1, x: 1, content: {} },
+      { z: 2, y: 1, x: 2, content: {} },
+      { z: 2, y: 1, x: 3, content: {} },
+      { z: 2, y: 2, x: 1, content: {} },
+      { z: 2, y: 2, x: 2, content: {} },
+      { z: 2, y: 2, x: 3, content: {} },
+      { z: 2, y: 3, x: 1, content: {} },
+      { z: 2, y: 3, x: 2, content: {} },
+      { z: 2, y: 3, x: 3, content: {} },
+      { z: 3, y: 1, x: 1, content: {} },
+      { z: 3, y: 1, x: 2, content: {} },
+      { z: 3, y: 1, x: 3, content: {} },
+      { z: 3, y: 2, x: 1, content: {} },
+      { z: 3, y: 2, x: 2, content: {} },
+      { z: 3, y: 2, x: 3, content: {} },
+      { z: 3, y: 3, x: 1, content: {} },
+      { z: 3, y: 3, x: 2, content: {} },
+      { z: 3, y: 3, x: 3, content: {} }
+    ], 'neighbors from middle');
+
+    var neighborsE = world.neighborsExcept({x: 2, y: 2, z: 2});
+
+    var nsE = neighborsE.map(_ser);
+    n.deepEqual(nsE, [
+      { z: 1, y: 1, x: 1, content: {} },
+      { z: 1, y: 1, x: 2, content: {} },
+      { z: 1, y: 1, x: 3, content: {} },
+      { z: 1, y: 2, x: 1, content: {} },
+      { z: 1, y: 2, x: 2, content: {} },
+      { z: 1, y: 2, x: 3, content: {} },
+      { z: 1, y: 3, x: 1, content: {} },
+      { z: 1, y: 3, x: 2, content: {} },
+      { z: 1, y: 3, x: 3, content: {} },
+      { z: 2, y: 1, x: 1, content: {} },
+      { z: 2, y: 1, x: 2, content: {} },
+      { z: 2, y: 1, x: 3, content: {} },
+      { z: 2, y: 2, x: 1, content: {} },
+      { z: 2, y: 2, x: 3, content: {} },
+      { z: 2, y: 3, x: 1, content: {} },
+      { z: 2, y: 3, x: 2, content: {} },
+      { z: 2, y: 3, x: 3, content: {} },
+      { z: 3, y: 1, x: 1, content: {} },
+      { z: 3, y: 1, x: 2, content: {} },
+      { z: 3, y: 1, x: 3, content: {} },
+      { z: 3, y: 2, x: 1, content: {} },
+      { z: 3, y: 2, x: 2, content: {} },
+      { z: 3, y: 2, x: 3, content: {} },
+      { z: 3, y: 3, x: 1, content: {} },
+      { z: 3, y: 3, x: 2, content: {} },
+      { z: 3, y: 3, x: 3, content: {} }
+    ], 'neighborsExcept from middle');
+
+    var neighbors2 = world.neighbors({x: 2, y: 2, z: 2}, 'x');
+    var ns2 = neighbors2.map(_ser);
+    n.deepEqual(ns2, [
+      { z: 2, y: 2, x: 1, content: {} },
+      { z: 2, y: 2, x: 2, content: {} },
+      { z: 2, y: 2, x: 3, content: {} }
+    ], 'neighbors with x dimension');
+
+    var neighbors3 = world.neighbors({x: 0, y: 0, z: 0});
+    var ns3 = neighbors3.map(_ser);
+    n.deepEqual(ns3, [
+      { z: 0, y: 0, x: 0, content: {} },
+      { z: 0, y: 0, x: 1, content: {} },
+      { z: 0, y: 1, x: 0, content: {} },
+      { z: 0, y: 1, x: 1, content: {} },
+      { z: 1, y: 0, x: 0, content: {} },
+      { z: 1, y: 0, x: 1, content: {} },
+      { z: 1, y: 1, x: 0, content: {} },
+      { z: 1, y: 1, x: 1, content: {} }
+    ], 'neighbors at corner');
+
+    var neighbors4 = world.neighbors({x: 1, y: 1, z: 2});
+    var ns4 = neighbors4.map(_ser);
+    n.deepEqual(ns4,
+      [ { z: 1, y: 0, x: 0, content: {} },
+        { z: 1, y: 0, x: 1, content: {} },
+        { z: 1, y: 0, x: 2, content: {} },
+        { z: 1, y: 1, x: 0, content: {} },
+        { z: 1, y: 1, x: 1, content: {} },
+        { z: 1, y: 1, x: 2, content: {} },
+        { z: 1, y: 2, x: 0, content: {} },
+        { z: 1, y: 2, x: 1, content: {} },
+        { z: 1, y: 2, x: 2, content: {} },
+        { z: 2, y: 0, x: 0, content: {} },
+        { z: 2, y: 0, x: 1, content: {} },
+        { z: 2, y: 0, x: 2, content: {} },
+        { z: 2, y: 1, x: 0, content: {} },
+        { z: 2, y: 1, x: 1, content: {} },
+        { z: 2, y: 1, x: 2, content: {} },
+        { z: 2, y: 2, x: 0, content: {} },
+        { z: 2, y: 2, x: 1, content: {} },
+        { z: 2, y: 2, x: 2, content: {} },
+        { z: 3, y: 0, x: 0, content: {} },
+        { z: 3, y: 0, x: 1, content: {} },
+        { z: 3, y: 0, x: 2, content: {} },
+        { z: 3, y: 1, x: 0, content: {} },
+        { z: 3, y: 1, x: 1, content: {} },
+        { z: 3, y: 1, x: 2, content: {} },
+        { z: 3, y: 2, x: 0, content: {} },
+        { z: 3, y: 2, x: 1, content: {} },
+        { z: 3, y: 2, x: 2, content: {} }
+      ], 'near a wall');
+
+    n.end();
   });
 
   t.end();

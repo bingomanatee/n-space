@@ -4,7 +4,7 @@
   "description": "a n-dimensional tracker",
   "main": "n-space.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap tests"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
   "homepage": "https://github.com/bingomanatee/n-space",
   "dependencies": {
     "lodash": "~2.4.1",
-    "fools": "0.0.9"
+    "fools": "~0.1.0"
   },
   "devDependencies": {
     "tap": "~0.4.9",

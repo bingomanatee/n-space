@@ -1,10 +1,12 @@
 module.exports = function (grunt) {
 
-  var files = ['lib/vendor/node.events.js',
+  var files = [
+    'src/FamousEventEmitter.js',
     'src/index.js',
     'src/Register.js',
     'src/World.js',
-    'src/Member.js'
+    'src/Member.js',
+    'src/WanderBot.js'
   ];
 
   grunt.initConfig({
@@ -12,6 +14,11 @@ module.exports = function (grunt) {
       base: {
         files: {
           'build/n-space.js': files
+        }
+      },
+      into_test_site: {
+        files: {
+          'test_site/n-space.js': 'n-space.js'
         }
       }
     },
@@ -40,5 +47,5 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
 
 // the default task can be run just by typing "grunt" on the command line
-  grunt.registerTask('default', ['jshint:beforeconcat', 'concat:base', 'jshint:afterconcat', 'umd:all']);
+  grunt.registerTask('default', ['jshint:beforeconcat', 'concat:base', 'jshint:afterconcat', 'umd:all', 'concat:into_test_site']);
 };
