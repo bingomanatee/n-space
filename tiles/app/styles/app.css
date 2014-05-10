@@ -59,6 +59,10 @@ html {
     opacity: 0.15 !important;
 }
 
+.control-surface h3 {
+    color: rgb(37, 74, 93)
+}
+
 .control-surface label {
     padding: 0
 }

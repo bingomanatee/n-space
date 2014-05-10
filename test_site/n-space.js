@@ -541,6 +541,7 @@ _.extend(NSPACE.Member.prototype, {
             this.emit('leaving', this, this.loc);
         }
         this.world.remove(this, this.mType, all ? null : this.loc);
+        this.emit('removed', this);
     },
 
     move: function (loc) {

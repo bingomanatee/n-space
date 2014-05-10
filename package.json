@@ -21,7 +21,8 @@
   "homepage": "https://github.com/bingomanatee/n-space",
   "dependencies": {
     "lodash": "~2.4.1",
-    "fools": "~0.1.0"
+    "fools": "~0.1.0",
+    "grunt-copy": "~0.1.0"
   },
   "devDependencies": {
     "tap": "~0.4.9",

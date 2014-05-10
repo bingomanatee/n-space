@@ -1,4 +1,5 @@
 /* globals define */
+/* globals NSPACE */
 define(function (require, exports, module) {
     'use strict';
     // import dependencies
@@ -14,7 +15,6 @@ define(function (require, exports, module) {
     var TOOLBAR_BUTTON_SIZE = 60;
     var TOOLBAR_BUTTON_PADDING = 6;
     var SETTINGS_HEIGHT = (2 * TOOLBAR_BUTTON_SIZE) + (2.5 * TOOLBAR_BUTTON_PADDING);
-    var SETTINGS_WIDTH = 400;
     var CONTROL_BACK_COLOR = 'rgba(56, 100, 100, 0.125)';
 
     // create the main context
@@ -60,10 +60,11 @@ define(function (require, exports, module) {
     });
 
     var settings = new Settings({
-        width: Math.min(SETTINGS_WIDTH, window.innerHeight - (settingsXoffset + TOOL_MARGIN)),
         color: CONTROL_BACK_COLOR,
         height: SETTINGS_HEIGHT
     });
 
     mainContext.add(settingsMod).add(settings);
+
+    window.$TILES = new NSPACE.World().dim('i', -100, 100).dim('j', -100, 100);
 });

@@ -19,6 +19,7 @@ define(function (require, exports, module) {
     var RANGE_MIN_SIZE = 10;
     var RANGE_SLIDER_LABEL_WIDTH = 30;
     var RANGE_MAX_SIZE = 100;
+    var SETTINGS_WIDTH = 400;
 
     function Settings(options, buttons) {
         View.call(this, _.defaults({}, options, Settings.DEFAULTS));
@@ -51,7 +52,7 @@ define(function (require, exports, module) {
     module.exports = Settings;
 
     Settings.DEFAULTS = {
-        width: 400,
+        width: SETTINGS_WIDTH,
         height: 150,
         buttonSize: 36,
         headingSize: 15,
@@ -68,7 +69,7 @@ define(function (require, exports, module) {
 
     _.extend(Settings.prototype, {
 
-        _rangeTitle: function(){
+        _rangeTitle: function () {
             return  'Tile Size: ' + this.gridSize;
         },
 
@@ -86,7 +87,7 @@ define(function (require, exports, module) {
                 value: this.gridSize
             });
 
-            rangeSlider.on('change', function(value){
+            rangeSlider.on('change', function (value) {
                 var n = parseInt(value.target.value);
                 this.gridSize = n;
                 this._eventInput.emit('grid size', n);
@@ -111,7 +112,7 @@ define(function (require, exports, module) {
             title.elementType = 'h3';
 
             sliderRo.add(new Modifier({
-                transform: Transform.translate(0, -RANGE_SLIDER_HEIGHT),
+                transform: Transform.translate(0, -RANGE_SLIDER_HEIGHT - 4),
                 origin: [0, 0]
             })).add(title);
             sliderRo.add(rangeSlider);
@@ -189,7 +190,5 @@ define(function (require, exports, module) {
         onModeButton: function (button, mode) {
             console.log('grid mode: ', mode);
         }
-    })
-    ;
-})
-;
+    });
+});
