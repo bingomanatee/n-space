@@ -41,17 +41,26 @@ html {
 .control-surface:hover h2 {
     opacity: 1 !important;
 }
-.control-surface h2 {
+
+.control-surface h2,
+.control-surface label,
+.control-surface h3 {
     margin: 0;
     padding: 0.25em;
-    right: 1em;
-    text-align: right;
     font-size: 80%;
     width: 100%;
     font-weight: normal;
     color: black;
-    opacity: 0.15 !important;
+}
 
+.control-surface h2 {
+    text-align: right;
+    right: 1em;
+    opacity: 0.15 !important;
+}
+
+.control-surface label {
+    padding: 0
 }
 
 /* -------------- settings ------------------- */
