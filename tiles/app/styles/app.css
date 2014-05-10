@@ -1,0 +1,113 @@
+html {
+    background: #fff;
+}
+
+.backfaceVisibility {
+    -webkit-backface-visibility: visible;
+    backface-visibility: visible;
+}
+
+* {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.control-surface button {
+    border: 2px solid rgba(200,200,200, 0);
+    outline: 1px solid rgba(0, 0, 0, 0.5);
+    text-align: center;
+    vertical-align: middle;
+    font-size: 80%;
+    font-weight: bold;
+    background-color: rgba(0,0,0,0.125);
+}
+
+.control-surface button.selected {
+    border-color: rgba(204, 51, 0, 0.125);
+    outline-color: rgba(123, 40, 0, 0.25);
+    background-color: white;
+}
+
+
+/* ------------- control-surface shared properties ------------------- */
+
+.control-surface {
+    -webkit-box-shadow: inset 6px 12px 30px 0px rgba(28, 50, 50, 0.25);
+    -moz-box-shadow: inset 6px 12px 30px 0px rgba(28, 50, 50, 0.25);
+    box-shadow: inset 6px 12px 30px 0px rgba(28, 50, 50, 0.25);
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+}
+
+.control-surface:hover h2 {
+    opacity: 1 !important;
+}
+.control-surface h2 {
+    margin: 0;
+    padding: 0.25em;
+    right: 1em;
+    text-align: right;
+    font-size: 80%;
+    width: 100%;
+    font-weight: normal;
+    color: black;
+    opacity: 0.15 !important;
+
+}
+
+/* -------------- settings ------------------- */
+
+.settings.control-surface button.mode-button {
+    min-width: 9em;
+}
+
+/* ------------- toolbars  ------------------- */
+
+.toolbar .control-surface button {
+    font-family: "Helvetica Condensed", "Helvetica Neue Light", "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.toolbar button {
+    padding: 0;
+    font-family: "Helvetica Condensed", "Helvetica Neue Light", "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.toolbar button p {
+    padding: 0;
+    margin: 0;
+    padding: 3px;
+    position: absolute;
+    background-color: white;
+    bottom: 0;
+}
+
+.toolbar .button.forest.selected {
+    background-image: url(/content/images/forest3x.png)
+}
+
+.toolbar .button.forest {
+    background-image: url(/content/images/forest3x_off.png)
+}
+
+.toolbar .button.road.selected {
+    background-image: url(/content/images/road3x.png)
+}
+
+.toolbar .button.road {
+    background-image: url(/content/images/road3x_off.png)
+}
+
+.toolbar .button.grass.selected {
+    background-image: url(/content/images/grass3x.png)
+}
+
+.toolbar .button.grass {
+    background-image: url(/content/images/grass3x_off.png)
+}
+
+.toolbar .button.mtn.selected {
+    background-image: url(/content/images/mtn3x.png)
+}
+
+.toolbar .button.mtn {
+    background-image: url(/content/images/mtn3x_off.png)
+}
