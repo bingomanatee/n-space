@@ -11,6 +11,7 @@ define(function (require, exports, module) {
     var buttonClasses = require('./buttonClasses');
     var buttonMenu = require('./buttonMenu');
     var InputSurface = require('famous/surfaces/InputSurface');
+    var Tile = require('./Tile');
 
     // size constants
     var RANGE_SLIDER_HEIGHT = 16;
@@ -21,7 +22,7 @@ define(function (require, exports, module) {
     var RANGE_MAX_SIZE = 100;
     var SETTINGS_WIDTH = 400;
 
-    function Settings(options, buttons) {
+    function Settings(options) {
         View.call(this, _.defaults({}, options, Settings.DEFAULTS));
 
         this.back = new ContainerSurface({
@@ -47,6 +48,7 @@ define(function (require, exports, module) {
 
         this._initGridButtons();
         this._initRangeSlider();
+        this._initUndoButton();
     }
 
     module.exports = Settings;
@@ -73,6 +75,49 @@ define(function (require, exports, module) {
             return  'Tile Size: ' + this.gridSize;
         },
 
+        _initUndoButton: function(){
+            var undoButton = new Surface({
+                content: 'Undo',
+                classes: ['button'],
+                size: [150, this.options.buttonHeight]
+            });
+
+            undoButton.elementType = 'button';
+
+            undoButton.on('click', function(){
+                if(Tile.cache.length){
+                    var world = window.$TILES;
+                    _.each(world.registries(), function(reg){
+                       if (reg.has('tile')){
+                           var tile = reg.getFirst('tile');
+                           tile.setTerrain('empty');
+                       }
+                    });
+
+                    var cache = Tile.cache.pop();
+
+                    for (var n = 0; n < cache.length; n += 3){
+                        var i = cache[n];
+                        var j = cache[n + 1];
+                        var terrain = cache [n + 2];
+
+                        var reg = world.getRegistry({i: i, j: j});
+
+                        if (reg.has('tile')){
+                            var tile = reg.getFirst('tile');
+                            tile.setTerrain(terrain);
+                        }
+                    }
+                }
+            });
+
+            this.undoButtonNode = this.back.add(new Modifier({
+                origin: [1,1]
+            }));
+
+            this.undoButtonNode.add(undoButton);
+        },
+
         _initRangeSlider: function () {
 
             /* ------------ range slider ---------------- */
@@ -92,6 +137,7 @@ define(function (require, exports, module) {
                 this.gridSize = n;
                 this._eventInput.emit('grid size', n);
                 console.log('range value: ', n);
+                this.updateTiles();
 
                 title.setContent(this._rangeTitle());
             }.bind(this));
@@ -163,6 +209,13 @@ define(function (require, exports, module) {
 
             buttonClasses(hexButton, ['mode-button']);
 
+            this.modeChoiceRenderNode = this.back.add(new Modifier({
+                transform: Transform.translate(
+                    this.options.margin,
+                    this.options.headingSize, 0)
+            }));
+            this.modeChoiceRenderNode.add(hexButton);
+
             var squareButton = new ToggleButton({
                 content: 'Squares',
                 classes: ['button'],
@@ -170,13 +223,6 @@ define(function (require, exports, module) {
             });
 
             buttonClasses(squareButton, ['mode-button']);
-
-            this.modeChoiceRenderNode = this.back.add(new Modifier({
-                transform: Transform.translate(
-                    this.options.margin,
-                    this.options.headingSize, 0)
-            }));
-            this.modeChoiceRenderNode.add(hexButton);
 
             this.modeChoiceRenderNode.add(new Modifier({
                 transform: Transform.translate(0, this.options.buttonHeight * 1.5, 0)
@@ -189,6 +235,16 @@ define(function (require, exports, module) {
 
         onModeButton: function (button, mode) {
             console.log('grid mode: ', mode);
+            this.gridMode = mode;
+
+            this.updateTiles();
+        },
+
+        updateTiles: function () {
+            window.$TILES.$redoTiles({
+                isHex: this.gridMode,
+                size: this.gridSize
+            })
         }
     });
 });

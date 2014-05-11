@@ -124,3 +124,35 @@ html {
 .toolbar .button.mtn {
     background-image: url(/content/images/mtn3x_off.png)
 }
+
+.tile {
+    background-size: 100%;
+}
+.tile.empty{
+    background-image: url(/content/images/tile_empty@2x.png)
+}
+.tile.forest{
+    background-image: url(/content/images/forest3x.png)
+}
+.tile.grass{
+    background-image: url(/content/images/grass3x.png)
+}
+.tile.road{
+    background-image: url(/content/images/road3x.png)
+}
+.tile.mtn{
+    background-image: url(/content/images/mtn3x.png)
+}
+
+*.unselectable {
+     -moz-user-select: -moz-none;
+     -khtml-user-select: none;
+     -webkit-user-select: none;
+
+     /*
+       Introduced in IE 10.
+       See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+     */
+     -ms-user-select: none;
+     user-select: none;
+ }

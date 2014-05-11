@@ -99,6 +99,9 @@ define(function (require, exports, module) {
 
         buttonClick: function(button, id){
           console.log('buton clicked: ', button, id);
+            if (button.options.click){
+                button.options.click.call(button);
+            }
         },
 
         _buttons: function () {
@@ -119,6 +122,10 @@ define(function (require, exports, module) {
 
                 out.onSurface.setProperties(props);
                 out.offSurface.setProperties(props);
+
+                if (button.click){
+                    out.on('click', button.click);
+                }
 
                 return out;
             }, this);
