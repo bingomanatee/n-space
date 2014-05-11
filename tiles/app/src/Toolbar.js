@@ -41,7 +41,7 @@ define(function (require, exports, module) {
 
         this.buttonGrid = new Grid({
             dimensions: [this.columns(), this.rows()],
-            cellSize: [this.options.buttonSize, this.options.buttonSize]
+            cellSize: [this.options.buttonSize, this._buttonHeight()]
         });
 
         this.back.add(gridMod).add(this.buttonGrid);
@@ -64,10 +64,15 @@ define(function (require, exports, module) {
     Toolbar.prototype = Object.create(View.prototype);
 
     _.extend(Toolbar.prototype, {
+
+        _buttonHeight: function(){
+         return  this.options.buttonHeight || this.options.buttonSize;
+        },
+
         containerSize: function (inner) {
             return [
                     this.columns() * (this.options.buttonSize + this.options.padding) + this.options.padding / 2,
-                    this.rows() * (this.options.padding + this.options.buttonSize) + this.options.padding / 2
+                    this.rows() * (this.options.padding + this._buttonHeight()) + this.options.padding / 2
                         + (inner ? 0 : this.options.headingSize)];
         },
 
@@ -108,7 +113,7 @@ define(function (require, exports, module) {
             var buttons = _.map(this.buttons, function (button, i) {
                 var out = new ToggleButton({
                     content: '<p>' +  button.label + '</p>',
-                    size: [this.options.buttonSize, this.options.buttonSize]
+                    size: [this.options.buttonSize, this._buttonHeight()]
                 });
 
                 out.options.inTransition = {curve: 'easeInOut', duration: 50};

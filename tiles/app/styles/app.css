@@ -13,7 +13,7 @@ html {
 
 .control-surface button {
     border: 2px solid rgba(200,200,200, 0);
-    outline: 1px solid rgba(0, 0, 0, 0.5);
+    outline: 2px solid rgba(0, 0, 0, 0.0);
     text-align: center;
     vertical-align: middle;
     font-size: 80%;
@@ -23,7 +23,7 @@ html {
 
 .control-surface button.selected {
     border-color: rgba(204, 51, 0, 0.125);
-    outline-color: rgba(123, 40, 0, 0.25);
+    outline-color: rgba(123, 40, 0, 0.75);
     background-color: white;
 }
 
@@ -89,7 +89,7 @@ html {
     margin: 0;
     padding: 3px;
     position: absolute;
-    background-color: white;
+    background-color: rgba(255,255,255,0.8);
     bottom: 0;
 }
 
@@ -101,12 +101,12 @@ html {
     background-image: url(/content/images/forest3x_off.png)
 }
 
-.toolbar .button.road.selected {
-    background-image: url(/content/images/road3x.png)
+.toolbar .button.desert.selected {
+    background-image: url(/content/images/desert3x.png)
 }
 
-.toolbar .button.road {
-    background-image: url(/content/images/road3x_off.png)
+.toolbar .button.desert {
+    background-image: url(/content/images/desert3x_off.png)
 }
 
 .toolbar .button.grass.selected {
@@ -137,11 +137,38 @@ html {
 .tile.grass{
     background-image: url(/content/images/grass3x.png)
 }
-.tile.road{
-    background-image: url(/content/images/road3x.png)
+.tile.desert{
+    background-image: url(/content/images/desert3x.png)
 }
 .tile.mtn{
     background-image: url(/content/images/mtn3x.png)
+}
+
+.tilescale {
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-color: white;
+}
+
+.tilescale.tilescale-2m{
+    background-image: url(/content/images/tilescale_2m.png)
+}
+.tilescale.tilescale-10m{
+    background-image: url(/content/images/tilescale_10m.png)
+}
+.tilescale.tilescale-100m{
+    background-image: url(/content/images/tilescale_100m.png)
+}
+.tilescale.tilescale-1km{
+    background-image: url(/content/images/tilescale_1km.png)
+}
+
+.tilescale.tilescale-10km{
+    background-image: url(/content/images/tilescale_10km.png)
+}
+
+.tilescale.tilescale-100km{
+    background-image: url(/content/images/tilescale_100km.png)
 }
 
 *.unselectable {
