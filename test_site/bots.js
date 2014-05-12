@@ -3,7 +3,7 @@ var botsWorker = new Worker('bots-worker.js');
 var addDomRE = /^addDom (.*)/;
 var moveRE = /^move ([\d]+) (.*)/;
 botsWorker.onmessage = function(msg){
-    console.log(msg);
+    //console.log(msg);
     var d = msg.data;
     if (addDomRE.test(d)){
         document.body.insertAdjacentHTML('afterend', addDomRE.exec(d)[1]);

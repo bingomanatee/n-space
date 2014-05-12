@@ -1,3 +1,9 @@
+/*jshint strict:false */
+/*global _ */
+/*global Fools */
+/*global EventEmitter */
+/*global NSPACE */
+
 /**
  * A member is a resident of the world at a single location.
  * @param world {NSPACE.World}
@@ -7,7 +13,7 @@
  * @constructor
  */
 var mid = 0;
-NSPACE.Member = function (mType, world, loc, stackLimit) {
+NSPACE.Member = function(mType, world, loc, stackLimit) {
     this.mid = ++mid;
     this.world = world;
     this.loc = loc || null;
@@ -18,15 +24,15 @@ NSPACE.Member = function (mType, world, loc, stackLimit) {
 
 _.extend(NSPACE.Member.prototype, {
 
-    serialize: function () {
+    serialize: function() {
         return {mid: this.mid, loc: _.clone(this.loc)};
     },
 
-    neighbors: function(){
+    neighbors: function() {
         return this.world.neighbors(this.loc);
     },
 
-    neighborsExcept: function(){
+    neighborsExcept: function() {
         return this.world.neighborsExcept(this.loc);
     },
 
@@ -35,7 +41,7 @@ _.extend(NSPACE.Member.prototype, {
      * @param loc {object} a location in world space
      * @param world {NSPACE.World}
      */
-    addToWorld: function (loc, world) {
+    addToWorld: function(loc, world) {
         if (world) {
             this.world = world;
         }
@@ -55,7 +61,7 @@ _.extend(NSPACE.Member.prototype, {
         return true;
     },
 
-    canStack: function (loc) {
+    canStack: function(loc) {
         if (this.stackLimit <= 0) {
             return true;
         }
@@ -64,10 +70,10 @@ _.extend(NSPACE.Member.prototype, {
             return true;
         }
 
-        var count = _.reduce(reg.get(this.mType), function (count, item) {
+        var count = _.reduce(reg.get(this.mType), function(count, item) {
             if (!item) {
                 return count;
-            } else if (item.mid == this.mid) {
+            } else if (item.mid === this.mid) {
                 return count;
             } else {
                 return count + 1;
@@ -77,7 +83,7 @@ _.extend(NSPACE.Member.prototype, {
         return count < this.stackLimit;
     },
 
-    remove: function (all) {
+    remove: function(all) {
         if (this.loc) {
             this.emit('leaving', this, this.loc);
         }
@@ -85,12 +91,12 @@ _.extend(NSPACE.Member.prototype, {
         this.emit('removed', this);
     },
 
-    move: function (loc) {
+    move: function(loc) {
         this.remove();
         this.addToWorld(loc);
     },
 
-    moveAni: function (loc, msec, interval) {
+    moveAni: function(loc, msec, interval) {
         //@TODO: check for non-move
 
         if (this._moving) {
@@ -123,12 +129,12 @@ _.extend(NSPACE.Member.prototype, {
         this.move_time = new Date().getTime();
     },
 
-    moveAniTime: function () {
+    moveAniTime: function() {
         var t = new Date().getTime();
         return t - this.move_time;
     },
 
-    slide: function () {
+    slide: function() {
         var dur = this.moveAniTime();
         if (dur > this.move_msec) {
             this.endMoveAni(true);
@@ -138,13 +144,13 @@ _.extend(NSPACE.Member.prototype, {
         }
     },
 
-    slideLoc: function(){
+    slideLoc: function() {
 
         var fromLoc = _.clone(this.from_stub.loc);
         var toLoc = _.clone(this.to_stub.loc);
         var progress = this.progress;
         var p2 = 1 - progress;
-        _.each(fromLoc, function(value, dim){
+        _.each(fromLoc, function(value, dim) {
             fromLoc[dim] = value * p2;
             toLoc[dim] *= progress;
             toLoc[dim] += fromLoc[dim];
@@ -153,7 +159,7 @@ _.extend(NSPACE.Member.prototype, {
         return toLoc;
     },
 
-    endMoveAni: function (moveToEnd, noEmit) {
+    endMoveAni: function(moveToEnd, noEmit) {
         this.world.remove(this.from_stub, this.mType);
         this.world.remove(this.to_stub, this.mType);
         clearInterval(this._moving);

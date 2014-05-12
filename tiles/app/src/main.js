@@ -1,6 +1,6 @@
 /* globals define */
 /* globals NSPACE */
-define(function (require, exports, module) {
+define(function(require, exports, module) {
     'use strict';
     // import dependencies
     var Engine = require('famous/core/Engine');
@@ -41,28 +41,28 @@ define(function (require, exports, module) {
             {
                 label: 'Forest',
                 classes: ['forest'],
-                click: function () {
+                click: function() {
                     terrainToolbar.terrain = 'forest'
                 }
             },
             {
                 label: 'Desert',
                 classes: ['desert'],
-                click: function () {
+                click: function() {
                     terrainToolbar.terrain = 'desert'
                 }
             },
             {
                 label: 'Grass',
                 classes: ['grass'],
-                click: function () {
+                click: function() {
                     terrainToolbar.terrain = 'grass'
                 }
             },
             {
                 label: 'Mtn',
                 classes: ['mtn'],
-                click: function () {
+                click: function() {
                     terrainToolbar.terrain = 'mtn'
                 }
             }
@@ -96,9 +96,9 @@ define(function (require, exports, module) {
 
         window.$TILES = new NSPACE.World({i: [-20, 20], j: [-20, 20]});
 
-        window.$TILES.$redoTiles = function (params) {
+        window.$TILES.$redoTiles = function(params) {
 
-            _.each(this.registries(), function (reg) {
+            _.each(this.registries(), function(reg) {
                 if (!reg.has('tile')) {
                     reg.add(new Tile(reg, params), 'tile');
                 } else {
@@ -119,7 +119,7 @@ define(function (require, exports, module) {
         /* ------------- cursor buttons ----------------- */
 
         function _moveTile(dir) {
-            return function (evt) {
+            return function(evt) {
 
                 //console.log('event: ', evt);
                 var n = evt.shiftKey ? 5 : 1;

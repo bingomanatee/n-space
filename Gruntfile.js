@@ -33,7 +33,7 @@ module.exports = function (grunt) {
                 objectToExport: 'NSPACE', // optional, internal object that will be exported
                 amdModuleId: 'NSPACE', // optional, if missing the AMD module will be anonymous
                 globalAlias: 'NSPACE', // optional, changes the name of the global variable
-
+                template: 'build/template.txt',
                 deps: { // optional
                     'default': ['_', 'Fools'],
                     cjs: ['lodash', 'fools']

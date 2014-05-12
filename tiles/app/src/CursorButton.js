@@ -1,5 +1,5 @@
-define(function (require, exports, module) {
-
+/*jslint unparam: false*/
+define(function(require, exports, module) {
     var ContainerSurface = require('famous/surfaces/ContainerSurface');
     var Surface = require('famous/core/Surface');
     var ToggleButton = require('famous/widgets/ToggleButton');
@@ -16,7 +16,7 @@ define(function (require, exports, module) {
      * note - cursorbutton is a Function -- not a class.
      */
 
-    module.exports = function(dir){
+    module.exports = function(dir) {
         var button = new ToggleButton({
             size: [40, 40],
             content: '<img src="content/images/cursor_button_' + dir + '.png" />'

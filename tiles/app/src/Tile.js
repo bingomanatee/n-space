@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function(require, exports, module) {
 
     var _ = require('lodash');
     var Surface = require('famous/core/Surface');
@@ -14,7 +14,7 @@ define(function (require, exports, module) {
 
     var $root;
 
-    Tile.tileRoot = function (root) {
+    Tile.tileRoot = function(root) {
         if (root) {
             $root = root;
         }
@@ -24,10 +24,10 @@ define(function (require, exports, module) {
     Tile.cache = [];
 
     // returns a flat array
-    function _cache(world){
-        var data = _.compact(_.map(world.registries(), function(reg){
+    function _cache(world) {
+        var data = _.compact(_.map(world.registries(), function(reg) {
             var terrain = false;
-            if (reg.has('tile')){
+            if (reg.has('tile')) {
                 var tile = reg.getFirst('tile');
                 terrain = tile.terrain || false;
             }
@@ -43,25 +43,25 @@ define(function (require, exports, module) {
     Tile.center = {i: 0, j: 0};
     _.extend(Tile.prototype, {
 
-        updateParams: function (params) {
+        updateParams: function(params) {
             this.params = params;
             this.makeSurface();
         },
 
-        i: function () {
+        i: function() {
             return this.reg ? this.reg.loc.i : 0;
         },
 
-        j: function () {
+        j: function() {
             return this.reg ? this.reg.loc.j : 0;
         },
 
-        setTerrain: function (terrain) {
+        setTerrain: function(terrain) {
             this.terrain = terrain || Tile.terrainToolbar.terrain;
             this._tileSurface.setClasses(['tile', this.terrain, 'unselectable']);
         },
 
-        makeSurface: function () {
+        makeSurface: function() {
             if (this._tileSurface) {
                 var size = this.params.size;
                 this._tileMod.setTransform(
@@ -89,7 +89,7 @@ define(function (require, exports, module) {
                     )
                 });
 
-                this._tileSurface.on('mousedown', function (evt) {
+                this._tileSurface.on('mousedown', function(evt) {
 
                     if (!Tile.terrainToolbar.terrain) {
                         return;
@@ -108,8 +108,8 @@ define(function (require, exports, module) {
                         var min_j = Math.min(last.j(), this.j());
                         var max_j = Math.max(last.j(), this.j());
 
-                        _.each(_.range(min_i, max_i + 1), function (i) {
-                            _.each(_.range(min_j, max_j + 1), function (j) {
+                        _.each(_.range(min_i, max_i + 1), function(i) {
+                            _.each(_.range(min_j, max_j + 1), function(j) {
                                 try {
                                     var reg = world.getRegistry({i: i, j: j});
                                     if (reg.has('tile')) {
@@ -126,7 +126,7 @@ define(function (require, exports, module) {
                     Tile.lastShiftClickedTile = evt.shiftKey ? this : '';
 
                     Tile.cache.push(_cache(world));
-                    if (Tile.cache.length > 8){
+                    if (Tile.cache.length > 8) {
                         Tile.cache.shift();
                     }
 

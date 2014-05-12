@@ -1,4 +1,10 @@
-NSPACE.WanderBotScanRule = function (bot, dims, reductor) {
+/*jshint strict:false */
+/*global _ */
+/*global Fools */
+/*global EventEmitter */
+/*global NSPACE */
+
+NSPACE.WanderBotScanRule = function(bot, dims, reductor) {
     this.bot = bot;
     this.world = bot.world;
     this.dims = dims;
@@ -6,9 +12,9 @@ NSPACE.WanderBotScanRule = function (bot, dims, reductor) {
     this.reductor = reductor;
 };
 
-NSPACE.WanderBotScanRule.checkStack = function (bot, next) {
-    return function (out, reg) {
-        if (!bot.member.canStack(reg.loc)){
+NSPACE.WanderBotScanRule.checkStack = function(bot, next) {
+    return function(out, reg) {
+        if (!bot.member.canStack(reg.loc)) {
             return out;
         } else {
             return next ? next(out, reg) : reg;
@@ -16,16 +22,16 @@ NSPACE.WanderBotScanRule.checkStack = function (bot, next) {
     };
 };
 
-NSPACE.WanderBotScanRule.forwardBackward = function (dim, bot) {
+NSPACE.WanderBotScanRule.forwardBackward = function(dim, bot) {
 
-    return function (out, reg) {
+    return function(out, reg) {
         return out && (reg.loc[dim] < out.loc[dim]) ? out : reg;
     };
 };
 
-NSPACE.WanderBotScanRule.forward = function (dim, bot) {
+NSPACE.WanderBotScanRule.forward = function(dim, bot) {
 
-    return function (out, reg) {
+    return function(out, reg) {
         var botValue = bot.loc()[dim];
         if (reg.loc[dim] <= botValue) {
             return out;
@@ -34,16 +40,16 @@ NSPACE.WanderBotScanRule.forward = function (dim, bot) {
     };
 };
 
-NSPACE.WanderBotScanRule.backwardForward = function (dim, bot) {
+NSPACE.WanderBotScanRule.backwardForward = function(dim, bot) {
 
-    return function (out, reg) {
+    return function(out, reg) {
         return out && (reg.loc[dim] > out.loc[dim]) ? out : reg;
     };
 };
 
-NSPACE.WanderBotScanRule.backward = function (dim, bot) {
+NSPACE.WanderBotScanRule.backward = function(dim, bot) {
 
-    return function (out, reg) {
+    return function(out, reg) {
         var botValue = bot.loc()[dim];
         if (reg.loc[dim] >= botValue) {
             return out;
@@ -54,29 +60,31 @@ NSPACE.WanderBotScanRule.backward = function (dim, bot) {
 
 _.extend(NSPACE.WanderBotScanRule.prototype, {
 
-    scan: function (neighborsExcept) {
+    scan: function(neighborsExcept) {
         var neighbors = this.dimNeighbors(neighborsExcept);
         return _.reduce(neighbors, this.reductor, null);
     },
 
-    loc: function () {
+    loc: function() {
         return this.bot.loc();
     },
 
-    dimNeighbors: function (neighbors) {
+    dimNeighbors: function(neighbors) {
         var self = this;
         if (this.dims && this.dims.length) {
             var names = _.difference(this.world.dimNames(), this.dims); // the dimensions that must NOT vary
-            return _.reduce(neighbors, function (out, reg) {
-                if (!_.find(names, function (name) {
+            return _.reduce(neighbors, function(out, reg) {
+                var match = _.find(names, function(name) {
                     var value = self.loc()[name];
                     var regValue = reg.loc[name];
-                    if (value != regValue) {
+                    if (value !== regValue) {
                         return name;
                     } else {
                         return false;
                     }
-                })) {
+                });
+
+                if (!match) {
                     out.push(reg);
                 }
 
@@ -87,10 +95,10 @@ _.extend(NSPACE.WanderBotScanRule.prototype, {
         }
     },
 
-    test: function () {
+    test: function() {
         var self = this;
 
-        return function (neighbors, isGood) {
+        return function(neighbors, isGood) {
             var reg = self.scan(neighbors);
             if (reg) {
                 isGood();
@@ -100,7 +108,7 @@ _.extend(NSPACE.WanderBotScanRule.prototype, {
     }
 });
 
-NSPACE.WanderBot = function (mType, world, loc, stackLimit) {
+NSPACE.WanderBot = function(mType, world, loc, stackLimit) {
     this.member = new NSPACE.Member(mType, world, loc, stackLimit);
     this.world = world;
     this.scanRules = [];
@@ -108,26 +116,26 @@ NSPACE.WanderBot = function (mType, world, loc, stackLimit) {
 
 _.extend(NSPACE.WanderBot.prototype, {
 
-    loc: function () {
+    loc: function() {
         return this.member.loc;
     },
 
-    serialize: function () {
+    serialize: function() {
         return _.extend({wanderBot: true}, this.member.serialize());
     },
 
-    addScanRule: function (dims, reductor) {
+    addScanRule: function(dims, reductor) {
         this.scanRules.push(new NSPACE.WanderBotScanRule(this, dims, reductor));
     },
 
-    scan: function () {
+    scan: function() {
         var gauntlet = Fools.gauntlet();
 
-        gauntlet.if_last = function (input) {
+        gauntlet.if_last = function(input) {
             return false;
         };
 
-        _.each(this.scanRules, function (rule) {
+        _.each(this.scanRules, function(rule) {
             gauntlet.add(rule.test());
         });
 
@@ -139,11 +147,11 @@ _.extend(NSPACE.WanderBot.prototype, {
         return out;
     },
 
-    moveTo: function (loc) {
+    moveTo: function(loc) {
         this.member.move(loc);
     },
 
-    move: function () {
+    move: function() {
         var openSpace = this.scan();
 
         if (!openSpace) {
@@ -154,7 +162,7 @@ _.extend(NSPACE.WanderBot.prototype, {
 
     },
 
-    moveAni: function(time){
+    moveAni: function(time) {
 
         var openSpace = this.scan();
 

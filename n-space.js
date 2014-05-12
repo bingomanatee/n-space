@@ -3,12 +3,17 @@
         module.exports = factory(require('lodash'), require('fools'));
     }
     else if(typeof define === 'function' && define.amd) {
-        define('NSPACE', ['_', 'Fools'], factory);
+        define(function(require, exports, module) {
+
+            module.exports = factory(require('lodash'), require('fools'));
+        });
     }
     else {
         root['NSPACE'] = factory(root._, root.Fools);
     }
 }(this, function(_, Fools) {
+
+/*jshint strict:false */
 
 /**
  * EventEmitter represents a channel for events.
@@ -17,8 +22,8 @@
  * @constructor
  */
 function EventEmitter() {
-  this.listeners = {};
-  this._owner = this;
+    this.listeners = {};
+    this._owner = this;
 }
 
 /**
@@ -32,13 +37,13 @@ function EventEmitter() {
  * @return {EventHandler} this
  */
 EventEmitter.prototype.emit = function emit(type, event) {
-  var handlers = this.listeners[type];
-  if (handlers) {
-    for (var i = 0; i < handlers.length; i++) {
-      handlers[i].call(this._owner, event);
+    var handlers = this.listeners[type];
+    if (handlers) {
+        for (var i = 0; i < handlers.length; i++) {
+            handlers[i].call(this._owner, event);
+        }
     }
-  }
-  return this;
+    return this;
 };
 
 /**
@@ -51,14 +56,14 @@ EventEmitter.prototype.emit = function emit(type, event) {
  * @return {EventHandler} this
  */
 EventEmitter.prototype.on = function on(type, handler) {
-  if (!(type in this.listeners)) {
-    this.listeners[type] = [];
-  }
-  var index = this.listeners[type].indexOf(handler);
-  if (index < 0) {
-    this.listeners[type].push(handler);
-  }
-  return this;
+    if (!(type in this.listeners)) {
+        this.listeners[type] = [];
+    }
+    var index = this.listeners[type].indexOf(handler);
+    if (index < 0) {
+        this.listeners[type].push(handler);
+    }
+    return this;
 };
 
 /**
@@ -78,11 +83,11 @@ EventEmitter.prototype.addListener = EventEmitter.prototype.on;
  * @return {EventEmitter} this
  */
 EventEmitter.prototype.removeListener = function removeListener(type, handler) {
-  var index = this.listeners[type].indexOf(handler);
-  if (index >= 0) {
-    this.listeners[type].splice(index, 1);
-  }
-  return this;
+    var index = this.listeners[type].indexOf(handler);
+    if (index >= 0) {
+        this.listeners[type].splice(index, 1);
+    }
+    return this;
 };
 
 /**
@@ -93,17 +98,29 @@ EventEmitter.prototype.removeListener = function removeListener(type, handler) {
  * @param {Object} owner object this EventEmitter belongs to
  */
 EventEmitter.prototype.bindThis = function bindThis(owner) {
-  this._owner = owner;
+    this._owner = owner;
 };
 
+/*jshint strict:false */
+/*global _ */
+/*global Fools */
+
 var NSPACE = {
-  reset: function(){
-    mid = 0;
-    rid = 0;
-  }
+    rid: 0,
+    mid: 0,
+    reset: function() {
+        NSPACE.mid = 0;
+        NSPACE.rid = 0;
+    }
 };
+/*jshint strict:false */
+/*global _ */
+/*global Fools */
+/*global EventEmitter */
+/*global NSPACE */
+
 var rid = 0;
-NSPACE.Register = function (world, location) {
+NSPACE.Register = function(world, location) {
     this.loc = location;
     this.world = world;
     this.content = {};
@@ -113,11 +130,11 @@ NSPACE.Register = function (world, location) {
 _.extend(NSPACE.Register.prototype, {
     t: 'Register',
 
-    equals: function (loc) {
+    equals: function(loc) {
         var self = this;
 
         function notEqual(dim) {
-            return loc[dim.name] != self.loc[dim.name];
+            return loc[dim.name] !== self.loc[dim.name];
         }
 
         var mismatch = _.find(this.world.dimArray, notEqual);
@@ -125,11 +142,11 @@ _.extend(NSPACE.Register.prototype, {
         return !mismatch;
     },
 
-    serialize: function () {
+    serialize: function() {
         var out = _.clone(this.loc);
         out.content = _.clone(this.content);
-        _.each(out.content, function (items, iType) {
-            out.content[iType] = _.reduce(items, function (out, item) {
+        _.each(out.content, function(items, iType) {
+            out.content[iType] = _.reduce(items, function(out, item) {
                 if (item.serialize && _.isFunction(item.serialize)) {
                     out.push(item.serialize());
                 } else {
@@ -144,23 +161,23 @@ _.extend(NSPACE.Register.prototype, {
         return out;
     },
 
-    get: function (iType) {
+    get: function(iType) {
         if (!this.has(iType)) {
             return [];
         }
         return this.content[iType].slice(0);
     },
 
-    getFirst: function (iType) {
+    getFirst: function(iType) {
         var items = this.get(iType);
         return _.first(items);
     },
 
-    has: function (iType) {
+    has: function(iType) {
         return this.content.hasOwnProperty(iType) && this.content[iType].length;
     },
 
-    add: function (item, iType) {
+    add: function(item, iType) {
         if (!iType) {
             iType = '___content';
         }
@@ -172,7 +189,7 @@ _.extend(NSPACE.Register.prototype, {
         }
     },
 
-    remove: function (item, iType) {
+    remove: function(item, iType) {
         //console.log('inspecting %s for %s', require('util').inspect(this.loc), iType);
         if (this.content.hasOwnProperty(iType) && this.content[iType] && _.isArray(this.content[iType])) {
             //  console.log('removing %s from %s', require('util').inspect(item), require('util').inspect(this.loc));
@@ -184,7 +201,14 @@ _.extend(NSPACE.Register.prototype, {
     }
 
 });
-NSPACE.World = function (dims) {
+/*jshint strict:false */
+/*global _ */
+/*global Fools */
+/*global EventEmitter */
+/*global NSPACE */
+/*jshint -W089 */
+
+NSPACE.World = function(dims) {
     if (dims) {
         this.init(dims);
     } else {
@@ -194,9 +218,9 @@ NSPACE.World = function (dims) {
 
 _.extend(NSPACE.World.prototype, {
 
-    serialize: function () {
+    serialize: function() {
         var reg = _.flatten(this.cells);
-        reg = _.map(reg, function (r) {
+        reg = _.map(reg, function(r) {
             return r.serialize();
         });
 
@@ -206,11 +230,11 @@ _.extend(NSPACE.World.prototype, {
         return _.sortBy.apply(_, dims);
     },
 
-    dimNames: function () {
+    dimNames: function() {
         return _.pluck(this.dimArray, 'name');
     },
 
-    add: function (item, iType, loc) {
+    add: function(item, iType, loc) {
         this.goodType(iType, 'add');
         this.goodLoc(loc, 'add');
         var reg = this.getRegistry(loc);
@@ -221,7 +245,7 @@ _.extend(NSPACE.World.prototype, {
         }
     },
 
-    remove: function (item, iType, loc) {
+    remove: function(item, iType, loc) {
         this.goodType(iType);
         if (loc) {
             this.goodLoc(loc, 'remove');
@@ -232,13 +256,13 @@ _.extend(NSPACE.World.prototype, {
                 throw ('cannot get registry');
             }
         } else {
-            _.each(this.registries(), function (reg) {
+            _.each(this.registries(), function(reg) {
                 reg.remove(item, iType);
             });
         }
     },
 
-    goodType: function (iType, msg) {
+    goodType: function(iType, msg) {
         if (!(iType && (_.isString(iType) || _.isNumber(iType)))) {
             throw 'World.' + (msg || 'goodType') + ': missing or non-string /number type';
         }
@@ -252,7 +276,7 @@ _.extend(NSPACE.World.prototype, {
      * @param loc {Object}
      * @param msg {String} -- optional
      */
-    goodLoc: function (loc, msg) {
+    goodLoc: function(loc, msg) {
         if (!(loc && _.isObject(loc))) {
             throw  'World.' + (msg || 'goodLoc') + ': missing or non-object location';
         }
@@ -271,7 +295,7 @@ _.extend(NSPACE.World.prototype, {
      * @param goodCheck {Boolean} optional -- validate that the loc is a valid location;
      * @returns {boolean}
      */
-    locInRange: function (loc, goodCheck) {
+    locInRange: function(loc, goodCheck) {
         if (goodCheck) {
             try {
                 this.goodLoc(loc);
@@ -280,7 +304,7 @@ _.extend(NSPACE.World.prototype, {
             }
 
         }
-        return !_.find(loc, function (value, name) {
+        return !_.find(loc, function(value, name) {
             var range = this.dims[name];
             if (value < range[0]) {
                 return true;
@@ -292,10 +316,10 @@ _.extend(NSPACE.World.prototype, {
         }, this);
     },
 
-    neighborsExcept: function (loc) {
+    neighborsExcept: function(loc) {
         var args = _.toArray(arguments);
         var neighbors = this.neighbors.apply(this, args);
-        return _.reject(neighbors, function (reg) {
+        return _.reject(neighbors, function(reg) {
             if (reg.equals(loc)) {
                 //console.log('found ', require('util').inspect(loc));
                 return true;
@@ -314,7 +338,7 @@ _.extend(NSPACE.World.prototype, {
      * however dimensions can also be passed in as subsequent parameters.
      * @param loc {object}
      */
-    neighbors: function (loc) {
+    neighbors: function(loc) {
         this.goodLoc(loc, 'neighbors');
 
         var dims;
@@ -330,7 +354,7 @@ _.extend(NSPACE.World.prototype, {
         }
 
         var out = [];
-        var loop = Fools.loop(function (item) {
+        var loop = Fools.loop(function(item) {
             //   console.log('getting neighbor', require('util').inspect(item));
             var l = _.defaults({}, item, loc);
 
@@ -339,7 +363,7 @@ _.extend(NSPACE.World.prototype, {
             }
             out.push(this.getRegistry(l));
         }.bind(this));
-        _.each(dims, function (name) {
+        _.each(dims, function(name) {
             if (!this.dims.hasOwnProperty(name)) {
                 throw ('neighbors:bad dim ' + name);
             }
@@ -354,18 +378,18 @@ _.extend(NSPACE.World.prototype, {
         return out;
     },
 
-    registries: function () {
+    registries: function() {
         if (!this._registries) {
             this._registries = _.flatten(this.cells);
         }
         return this._registries;
     },
 
-    getRegistry: function (loc) {
+    getRegistry: function(loc) {
         this.goodLoc(loc, 'getRegistry');
         var self = this;
         var coords = _.pluck(this.dimArray, 'name');
-        var reg = _.reduce(coords, function (cells, name) {
+        var reg = _.reduce(coords, function(cells, name) {
             if (!(loc.hasOwnProperty(name))) {
                 throw ('World.getRegistry:loc missing property ' + name);
             }
@@ -379,14 +403,14 @@ _.extend(NSPACE.World.prototype, {
             return cells[index];
         }, this.cells);
 
-        if (reg.t != 'Register') {
+        if (reg.t !== 'Register') {
             throw ('World.getRegistry:bad request');
         }
 
         return reg;
     },
 
-    goodDims: function () {
+    goodDims: function() {
         var count = 0;
         for (var dim in this.dims) {
             ++count;
@@ -398,7 +422,7 @@ _.extend(NSPACE.World.prototype, {
             if (!_.isNumber(min)) {
                 throw 'non numeric min for ' + dim;
             }
-            if (min != Math.floor(min)) {
+            if (min !== Math.floor(min)) {
                 throw 'fractional min for ' + dim;
             }
 
@@ -406,7 +430,7 @@ _.extend(NSPACE.World.prototype, {
             if (!_.isNumber(max)) {
                 throw 'non numeric max for ' + dim;
             }
-            if (max != Math.floor(max)) {
+            if (max !== Math.floor(max)) {
                 throw 'fractional max for ' + dim;
             }
 
@@ -420,15 +444,15 @@ _.extend(NSPACE.World.prototype, {
         }
     },
 
-    init: function (dims) {
+    init: function(dims) {
         if (dims) {
             this.dims = dims;
         }
         this.goodDims();
         this._registries = false;
 
-        this.dimArray = _.map(this.dims, function (range, name) {
-            return{name: name, min: range[0], max: range[1]};
+        this.dimArray = _.map(this.dims, function(range, name) {
+            return {name: name, min: range[0], max: range[1]};
         });
 
         //  console.log('dimArray: %s', require('util').inspect(this.dimArray));
@@ -445,7 +469,7 @@ _.extend(NSPACE.World.prototype, {
                 var max = dim.max;
                 min = Math.floor(min);
 
-                return _.map(_.range(min, max + 1), function (value) {
+                return _.map(_.range(min, max + 1), function(value) {
                     var loc = {};
                     loc[name] = value;
                     _.extend(loc, location);
@@ -462,6 +486,12 @@ _.extend(NSPACE.World.prototype, {
 
     }
 });
+/*jshint strict:false */
+/*global _ */
+/*global Fools */
+/*global EventEmitter */
+/*global NSPACE */
+
 /**
  * A member is a resident of the world at a single location.
  * @param world {NSPACE.World}
@@ -471,7 +501,7 @@ _.extend(NSPACE.World.prototype, {
  * @constructor
  */
 var mid = 0;
-NSPACE.Member = function (mType, world, loc, stackLimit) {
+NSPACE.Member = function(mType, world, loc, stackLimit) {
     this.mid = ++mid;
     this.world = world;
     this.loc = loc || null;
@@ -482,15 +512,15 @@ NSPACE.Member = function (mType, world, loc, stackLimit) {
 
 _.extend(NSPACE.Member.prototype, {
 
-    serialize: function () {
+    serialize: function() {
         return {mid: this.mid, loc: _.clone(this.loc)};
     },
 
-    neighbors: function(){
+    neighbors: function() {
         return this.world.neighbors(this.loc);
     },
 
-    neighborsExcept: function(){
+    neighborsExcept: function() {
         return this.world.neighborsExcept(this.loc);
     },
 
@@ -499,7 +529,7 @@ _.extend(NSPACE.Member.prototype, {
      * @param loc {object} a location in world space
      * @param world {NSPACE.World}
      */
-    addToWorld: function (loc, world) {
+    addToWorld: function(loc, world) {
         if (world) {
             this.world = world;
         }
@@ -519,7 +549,7 @@ _.extend(NSPACE.Member.prototype, {
         return true;
     },
 
-    canStack: function (loc) {
+    canStack: function(loc) {
         if (this.stackLimit <= 0) {
             return true;
         }
@@ -528,10 +558,10 @@ _.extend(NSPACE.Member.prototype, {
             return true;
         }
 
-        var count = _.reduce(reg.get(this.mType), function (count, item) {
+        var count = _.reduce(reg.get(this.mType), function(count, item) {
             if (!item) {
                 return count;
-            } else if (item.mid == this.mid) {
+            } else if (item.mid === this.mid) {
                 return count;
             } else {
                 return count + 1;
@@ -541,7 +571,7 @@ _.extend(NSPACE.Member.prototype, {
         return count < this.stackLimit;
     },
 
-    remove: function (all) {
+    remove: function(all) {
         if (this.loc) {
             this.emit('leaving', this, this.loc);
         }
@@ -549,12 +579,12 @@ _.extend(NSPACE.Member.prototype, {
         this.emit('removed', this);
     },
 
-    move: function (loc) {
+    move: function(loc) {
         this.remove();
         this.addToWorld(loc);
     },
 
-    moveAni: function (loc, msec, interval) {
+    moveAni: function(loc, msec, interval) {
         //@TODO: check for non-move
 
         if (this._moving) {
@@ -587,12 +617,12 @@ _.extend(NSPACE.Member.prototype, {
         this.move_time = new Date().getTime();
     },
 
-    moveAniTime: function () {
+    moveAniTime: function() {
         var t = new Date().getTime();
         return t - this.move_time;
     },
 
-    slide: function () {
+    slide: function() {
         var dur = this.moveAniTime();
         if (dur > this.move_msec) {
             this.endMoveAni(true);
@@ -602,13 +632,13 @@ _.extend(NSPACE.Member.prototype, {
         }
     },
 
-    slideLoc: function(){
+    slideLoc: function() {
 
         var fromLoc = _.clone(this.from_stub.loc);
         var toLoc = _.clone(this.to_stub.loc);
         var progress = this.progress;
         var p2 = 1 - progress;
-        _.each(fromLoc, function(value, dim){
+        _.each(fromLoc, function(value, dim) {
             fromLoc[dim] = value * p2;
             toLoc[dim] *= progress;
             toLoc[dim] += fromLoc[dim];
@@ -617,7 +647,7 @@ _.extend(NSPACE.Member.prototype, {
         return toLoc;
     },
 
-    endMoveAni: function (moveToEnd, noEmit) {
+    endMoveAni: function(moveToEnd, noEmit) {
         this.world.remove(this.from_stub, this.mType);
         this.world.remove(this.to_stub, this.mType);
         clearInterval(this._moving);
@@ -639,7 +669,13 @@ _.extend(NSPACE.Member.prototype, {
 });
 
 _.extend(NSPACE.Member.prototype, EventEmitter.prototype);
-NSPACE.WanderBotScanRule = function (bot, dims, reductor) {
+/*jshint strict:false */
+/*global _ */
+/*global Fools */
+/*global EventEmitter */
+/*global NSPACE */
+
+NSPACE.WanderBotScanRule = function(bot, dims, reductor) {
     this.bot = bot;
     this.world = bot.world;
     this.dims = dims;
@@ -647,9 +683,9 @@ NSPACE.WanderBotScanRule = function (bot, dims, reductor) {
     this.reductor = reductor;
 };
 
-NSPACE.WanderBotScanRule.checkStack = function (bot, next) {
-    return function (out, reg) {
-        if (!bot.member.canStack(reg.loc)){
+NSPACE.WanderBotScanRule.checkStack = function(bot, next) {
+    return function(out, reg) {
+        if (!bot.member.canStack(reg.loc)) {
             return out;
         } else {
             return next ? next(out, reg) : reg;
@@ -657,16 +693,16 @@ NSPACE.WanderBotScanRule.checkStack = function (bot, next) {
     };
 };
 
-NSPACE.WanderBotScanRule.forwardBackward = function (dim, bot) {
+NSPACE.WanderBotScanRule.forwardBackward = function(dim, bot) {
 
-    return function (out, reg) {
+    return function(out, reg) {
         return out && (reg.loc[dim] < out.loc[dim]) ? out : reg;
     };
 };
 
-NSPACE.WanderBotScanRule.forward = function (dim, bot) {
+NSPACE.WanderBotScanRule.forward = function(dim, bot) {
 
-    return function (out, reg) {
+    return function(out, reg) {
         var botValue = bot.loc()[dim];
         if (reg.loc[dim] <= botValue) {
             return out;
@@ -675,16 +711,16 @@ NSPACE.WanderBotScanRule.forward = function (dim, bot) {
     };
 };
 
-NSPACE.WanderBotScanRule.backwardForward = function (dim, bot) {
+NSPACE.WanderBotScanRule.backwardForward = function(dim, bot) {
 
-    return function (out, reg) {
+    return function(out, reg) {
         return out && (reg.loc[dim] > out.loc[dim]) ? out : reg;
     };
 };
 
-NSPACE.WanderBotScanRule.backward = function (dim, bot) {
+NSPACE.WanderBotScanRule.backward = function(dim, bot) {
 
-    return function (out, reg) {
+    return function(out, reg) {
         var botValue = bot.loc()[dim];
         if (reg.loc[dim] >= botValue) {
             return out;
@@ -695,29 +731,31 @@ NSPACE.WanderBotScanRule.backward = function (dim, bot) {
 
 _.extend(NSPACE.WanderBotScanRule.prototype, {
 
-    scan: function (neighborsExcept) {
+    scan: function(neighborsExcept) {
         var neighbors = this.dimNeighbors(neighborsExcept);
         return _.reduce(neighbors, this.reductor, null);
     },
 
-    loc: function () {
+    loc: function() {
         return this.bot.loc();
     },
 
-    dimNeighbors: function (neighbors) {
+    dimNeighbors: function(neighbors) {
         var self = this;
         if (this.dims && this.dims.length) {
             var names = _.difference(this.world.dimNames(), this.dims); // the dimensions that must NOT vary
-            return _.reduce(neighbors, function (out, reg) {
-                if (!_.find(names, function (name) {
+            return _.reduce(neighbors, function(out, reg) {
+                var match = _.find(names, function(name) {
                     var value = self.loc()[name];
                     var regValue = reg.loc[name];
-                    if (value != regValue) {
+                    if (value !== regValue) {
                         return name;
                     } else {
                         return false;
                     }
-                })) {
+                });
+
+                if (!match) {
                     out.push(reg);
                 }
 
@@ -728,10 +766,10 @@ _.extend(NSPACE.WanderBotScanRule.prototype, {
         }
     },
 
-    test: function () {
+    test: function() {
         var self = this;
 
-        return function (neighbors, isGood) {
+        return function(neighbors, isGood) {
             var reg = self.scan(neighbors);
             if (reg) {
                 isGood();
@@ -741,7 +779,7 @@ _.extend(NSPACE.WanderBotScanRule.prototype, {
     }
 });
 
-NSPACE.WanderBot = function (mType, world, loc, stackLimit) {
+NSPACE.WanderBot = function(mType, world, loc, stackLimit) {
     this.member = new NSPACE.Member(mType, world, loc, stackLimit);
     this.world = world;
     this.scanRules = [];
@@ -749,26 +787,26 @@ NSPACE.WanderBot = function (mType, world, loc, stackLimit) {
 
 _.extend(NSPACE.WanderBot.prototype, {
 
-    loc: function () {
+    loc: function() {
         return this.member.loc;
     },
 
-    serialize: function () {
+    serialize: function() {
         return _.extend({wanderBot: true}, this.member.serialize());
     },
 
-    addScanRule: function (dims, reductor) {
+    addScanRule: function(dims, reductor) {
         this.scanRules.push(new NSPACE.WanderBotScanRule(this, dims, reductor));
     },
 
-    scan: function () {
+    scan: function() {
         var gauntlet = Fools.gauntlet();
 
-        gauntlet.if_last = function (input) {
+        gauntlet.if_last = function(input) {
             return false;
         };
 
-        _.each(this.scanRules, function (rule) {
+        _.each(this.scanRules, function(rule) {
             gauntlet.add(rule.test());
         });
 
@@ -780,11 +818,11 @@ _.extend(NSPACE.WanderBot.prototype, {
         return out;
     },
 
-    moveTo: function (loc) {
+    moveTo: function(loc) {
         this.member.move(loc);
     },
 
-    move: function () {
+    move: function() {
         var openSpace = this.scan();
 
         if (!openSpace) {
@@ -795,7 +833,7 @@ _.extend(NSPACE.WanderBot.prototype, {
 
     },
 
-    moveAni: function(time){
+    moveAni: function(time) {
 
         var openSpace = this.scan();
 

@@ -1,3 +1,5 @@
+/*jshint strict:false */
+
 /**
  * EventEmitter represents a channel for events.
  *
@@ -5,8 +7,8 @@
  * @constructor
  */
 function EventEmitter() {
-  this.listeners = {};
-  this._owner = this;
+    this.listeners = {};
+    this._owner = this;
 }
 
 /**
@@ -20,13 +22,13 @@ function EventEmitter() {
  * @return {EventHandler} this
  */
 EventEmitter.prototype.emit = function emit(type, event) {
-  var handlers = this.listeners[type];
-  if (handlers) {
-    for (var i = 0; i < handlers.length; i++) {
-      handlers[i].call(this._owner, event);
+    var handlers = this.listeners[type];
+    if (handlers) {
+        for (var i = 0; i < handlers.length; i++) {
+            handlers[i].call(this._owner, event);
+        }
     }
-  }
-  return this;
+    return this;
 };
 
 /**
@@ -39,14 +41,14 @@ EventEmitter.prototype.emit = function emit(type, event) {
  * @return {EventHandler} this
  */
 EventEmitter.prototype.on = function on(type, handler) {
-  if (!(type in this.listeners)) {
-    this.listeners[type] = [];
-  }
-  var index = this.listeners[type].indexOf(handler);
-  if (index < 0) {
-    this.listeners[type].push(handler);
-  }
-  return this;
+    if (!(type in this.listeners)) {
+        this.listeners[type] = [];
+    }
+    var index = this.listeners[type].indexOf(handler);
+    if (index < 0) {
+        this.listeners[type].push(handler);
+    }
+    return this;
 };
 
 /**
@@ -66,11 +68,11 @@ EventEmitter.prototype.addListener = EventEmitter.prototype.on;
  * @return {EventEmitter} this
  */
 EventEmitter.prototype.removeListener = function removeListener(type, handler) {
-  var index = this.listeners[type].indexOf(handler);
-  if (index >= 0) {
-    this.listeners[type].splice(index, 1);
-  }
-  return this;
+    var index = this.listeners[type].indexOf(handler);
+    if (index >= 0) {
+        this.listeners[type].splice(index, 1);
+    }
+    return this;
 };
 
 /**
@@ -81,5 +83,5 @@ EventEmitter.prototype.removeListener = function removeListener(type, handler) {
  * @param {Object} owner object this EventEmitter belongs to
  */
 EventEmitter.prototype.bindThis = function bindThis(owner) {
-  this._owner = owner;
+    this._owner = owner;
 };

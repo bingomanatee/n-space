@@ -48,13 +48,13 @@ function makeBot(loc) {
     });
 
     bot.member.on('slide progress', function (member, loc) {
-        console.log('slide');
+       // console.log('slide');
         slideMember(member, loc);
     });
 
     setInterval(function () {
         bot.move();
-    }, 200);
+    }, 500);
 
     postMessage('addDom ' + _div(bot));
 

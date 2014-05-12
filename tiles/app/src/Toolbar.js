@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function(require, exports, module) {
 
     var ContainerSurface = require('famous/surfaces/ContainerSurface');
     var Surface = require('famous/core/Surface');
@@ -65,18 +65,18 @@ define(function (require, exports, module) {
 
     _.extend(Toolbar.prototype, {
 
-        _buttonHeight: function(){
-         return  this.options.buttonHeight || this.options.buttonSize;
+        _buttonHeight: function() {
+            return this.options.buttonHeight || this.options.buttonSize;
         },
 
-        containerSize: function (inner) {
+        containerSize: function(inner) {
             return [
                     this.columns() * (this.options.buttonSize + this.options.padding) + this.options.padding / 2,
                     this.rows() * (this.options.padding + this._buttonHeight()) + this.options.padding / 2
-                        + (inner ? 0 : this.options.headingSize)];
+                    + (inner ? 0 : this.options.headingSize)];
         },
 
-        columns: function () {
+        columns: function() {
             if (this.options.columns) {
                 return this.options.columns;
             } else {
@@ -84,7 +84,7 @@ define(function (require, exports, module) {
             }
         },
 
-        rows: function () {
+        rows: function() {
             if (this.options.rows) {
                 return this.options.rows;
             } else {
@@ -92,7 +92,7 @@ define(function (require, exports, module) {
             }
         },
 
-        addButtons: function (buttons) {
+        addButtons: function(buttons) {
             if (!buttons) {
                 return;
             }
@@ -102,17 +102,17 @@ define(function (require, exports, module) {
 
         },
 
-        buttonClick: function(button, id){
-          console.log('buton clicked: ', button, id);
-            if (button.options.click){
+        buttonClick: function(button, id) {
+            console.log('buton clicked: ', button, id);
+            if (button.options.click) {
                 button.options.click.call(button);
             }
         },
 
-        _buttons: function () {
-            var buttons = _.map(this.buttons, function (button, i) {
+        _buttons: function() {
+            var buttons = _.map(this.buttons, function(button, i) {
                 var out = new ToggleButton({
-                    content: '<p>' +  button.label + '</p>',
+                    content: '<p>' + button.label + '</p>',
                     size: [this.options.buttonSize, this._buttonHeight()]
                 });
 
@@ -128,7 +128,7 @@ define(function (require, exports, module) {
                 out.onSurface.setProperties(props);
                 out.offSurface.setProperties(props);
 
-                if (button.click){
+                if (button.click) {
                     out.on('click', button.click);
                 }
 
