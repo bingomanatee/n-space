@@ -18,7 +18,7 @@ define(function(require, exports, module) {
     var RANGE_SLIDER_HEIGHT = 16;
     var RANGE_SLIDER_WIDTH = 130;
 
-    var RANGE_MIN_SIZE = 10;
+    var RANGE_MIN_SIZE = 20;
     var RANGE_SLIDER_LABEL_WIDTH = 30;
     var RANGE_MAX_SIZE = 100;
     var SETTINGS_WIDTH = 500;
@@ -86,7 +86,7 @@ define(function(require, exports, module) {
         },
 
         _rangeTitle: function() {
-            return 'Tile Size: ' + this.gridSize;
+            return 'Zoom: ' + this.gridSize;
         },
 
         _initUndoButton: function() {
@@ -145,6 +145,15 @@ define(function(require, exports, module) {
                 size: [RANGE_SLIDER_WIDTH, RANGE_SLIDER_HEIGHT],
                 value: this.gridSize
             });
+
+            function _setMin (value){
+                console.log('range slider ', value);
+                rangeSlider._currTarget.setAttribute('min', RANGE_MIN_SIZE);
+                rangeSlider._currTarget.setAttribute('max', RANGE_MAX_SIZE);
+                rangeSlider.removeListener('deploy', _setMin);
+            }
+
+            rangeSlider.on('deploy', _setMin);
 
             rangeSlider.on('change', function(value) {
                 var n = parseInt(value.target.value);

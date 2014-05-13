@@ -43,9 +43,44 @@ define(function(require, exports, module) {
     Tile.center = {i: 0, j: 0};
     _.extend(Tile.prototype, {
 
+        visibleTile: function() {
+            var rel_i = this.reg.loc.i - Tile.center.i;
+            var rel_j = this.reg.loc.j - Tile.center.j;
+
+            return (rel_i >= -20 && rel_j <= 20) && (rel_j >= -20 && rel_j < 20);
+        },
+
         updateParams: function(params) {
             this.params = params;
-            this.makeSurface();
+            if (this.visibleTile()) {
+                this._ensureSurface();
+                this.updateSurfaceAndMod();
+            } else {
+                this._removeSurface();
+            }
+        },
+
+        _removeSurface: function(){
+
+            if (this._tileNode){
+                this._tileNode._object = null;
+                this._tileNode._child = null;
+                this._tileNode._hasMultipleChildren = false;
+                this._tileNode._isRenderable = false;
+                this._tileNode._isModifier = false;
+                this._tileNode = null;
+            }
+            this._tileSurface = null;
+        },
+
+        _ensureSurface: function(){
+            if (!this._tileNode) {
+                this.makeMod();
+            }
+            if (!this._tileSurface) {
+                this.makeSurface();
+            }
+            this._tileNode.add(this._tileSurface);
         },
 
         i: function() {
@@ -61,79 +96,80 @@ define(function(require, exports, module) {
             this._tileSurface.setClasses(['tile', this.terrain, 'unselectable']);
         },
 
+        updateSurfaceAndMod: function() {
+            var size = this.params.size;
+            this._tileMod.setTransform(
+                Transform.translate(
+                        this.reg.loc.i * size,
+                        this.reg.loc.j * size,
+                    0
+                )
+            );
+            this._tileSurface.setSize([size, size])
+        },
+
+        makeMod: function() {
+            this._tileMod = new StateModifier({
+                size: [this.params.size, this.params.size],
+                transform: Transform.translate(
+                        this.reg.loc.i * this.params.size,
+                        this.reg.loc.j * this.params.size,
+                    0
+                )
+            });
+
+            this._tileNode = $root.add(this._tileMod);
+        },
+
         makeSurface: function() {
-            if (this._tileSurface) {
-                var size = this.params.size;
-                this._tileMod.setTransform(
-                    Transform.translate(
-                            this.reg.loc.i * size,
-                            this.reg.loc.j * size,
-                        0
-                    )
-                );
-                this._tileSurface.setSize([size, size])
-            } else {
-                this._tileSurface = new Surface({
-                    properties: {
-                        backgroundColor: 'grey'
-                    },
-                    classes: ['tile', 'empty', 'unselectable'],
-                    title: '(' + this.reg.loc.i + ' &times; ' + this.reg.loc.j + ')'
-                });
-                this._tileMod = new StateModifier({
-                    size: [this.params.size, this.params.size],
-                    transform: Transform.translate(
-                            this.reg.loc.i * this.params.size,
-                            this.reg.loc.j * this.params.size,
-                        0
-                    )
-                });
+            this._tileSurface = new Surface({
+                properties: {
+                    backgroundColor: 'grey'
+                },
+                classes: ['tile', 'empty', 'unselectable']
+            });
+            this._tileSurface.on('mousedown', function(evt) {
 
-                this._tileSurface.on('mousedown', function(evt) {
+                if (!Tile.terrainToolbar.terrain) {
+                    return;
+                }
 
-                    if (!Tile.terrainToolbar.terrain) {
-                        return;
-                    }
+                var world = this.reg.world;
+                this.setTerrain();
 
-                    var world = this.reg.world;
-                    this.setTerrain();
+                var last = Tile.lastShiftClickedTile;
 
-                    var last = Tile.lastShiftClickedTile;
+                if (last) {
 
-                    if (last) {
+                    var min_i = Math.min(last.i(), this.i());
+                    var max_i = Math.max(last.i(), this.i());
 
-                        var min_i = Math.min(last.i(), this.i());
-                        var max_i = Math.max(last.i(), this.i());
+                    var min_j = Math.min(last.j(), this.j());
+                    var max_j = Math.max(last.j(), this.j());
 
-                        var min_j = Math.min(last.j(), this.j());
-                        var max_j = Math.max(last.j(), this.j());
-
-                        _.each(_.range(min_i, max_i + 1), function(i) {
-                            _.each(_.range(min_j, max_j + 1), function(j) {
-                                try {
-                                    var reg = world.getRegistry({i: i, j: j});
-                                    if (reg.has('tile')) {
-                                        var tile = reg.getFirst('tile');
-                                        tile.setTerrain();
-                                    }
-                                } catch (err) {
-
+                    _.each(_.range(min_i, max_i + 1), function(i) {
+                        _.each(_.range(min_j, max_j + 1), function(j) {
+                            try {
+                                var reg = world.getRegistry({i: i, j: j});
+                                if (reg.has('tile')) {
+                                    var tile = reg.getFirst('tile');
+                                    tile.setTerrain();
                                 }
-                            })
-                        });
-                    }
+                            } catch (err) {
 
-                    Tile.lastShiftClickedTile = evt.shiftKey ? this : '';
+                            }
+                        })
+                    });
+                }
 
-                    Tile.cache.push(_cache(world));
-                    if (Tile.cache.length > 8) {
-                        Tile.cache.shift();
-                    }
+                Tile.lastShiftClickedTile = evt.shiftKey ? this : '';
 
-                }.bind(this));
+                Tile.cache.push(_cache(world));
+                if (Tile.cache.length > 8) {
+                    Tile.cache.shift();
+                }
 
-                $root.add(this._tileMod).add(this._tileSurface);
-            }
+            }.bind(this));
         }
 
     });

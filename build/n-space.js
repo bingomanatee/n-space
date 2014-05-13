@@ -192,7 +192,7 @@ _.extend(NSPACE.Register.prototype, {
 /*global EventEmitter */
 /*global NSPACE */
 /*jshint -W089 */
-
+/*global console */
 NSPACE.World = function(dims) {
     if (dims) {
         this.init(dims);
@@ -429,6 +429,32 @@ _.extend(NSPACE.World.prototype, {
         }
     },
 
+    ifRange: function(range, ifInRange, ifOutsideRange) {
+
+        var g = Fools.each();
+       // debugger;
+
+        _.each(range, function(value, dim){
+             if (_.isNumber(value)){
+                 g.add(function(reg){
+                     return (reg.loc[dim] === value);
+                 });
+             } else if (_.isArray(value)){
+                 g.add(function(reg){
+                     return (reg.loc[dim] >= value[0] && reg.loc[dim] <= value[1]);
+                 });
+             } else if (_.isFunction(value)){
+                 return value(reg.loc[dim]);
+             }
+        });
+
+        var f = Fools.fork(g).then(ifInRange).else(ifOutsideRange).err(function(err){
+            console.log('err: ', err);
+        });
+
+        _.each(this.registries(),f);
+    },
+
     init: function(dims) {
         if (dims) {
             this.dims = dims;
@@ -471,6 +497,7 @@ _.extend(NSPACE.World.prototype, {
 
     }
 });
+
 /*jshint strict:false */
 /*global _ */
 /*global Fools */

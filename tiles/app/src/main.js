@@ -94,10 +94,8 @@ define(function(require, exports, module) {
         Tile.settings = settings;
         Tile.terrainToolbar = terrainToolbar;
 
-        window.$TILES = new NSPACE.World({i: [-20, 20], j: [-20, 20]});
-
+        window.$TILES = new NSPACE.World({i: [-100, 100], j: [-100, 100]});
         window.$TILES.$redoTiles = function(params) {
-
             _.each(this.registries(), function(reg) {
                 if (!reg.has('tile')) {
                     reg.add(new Tile(reg, params), 'tile');
@@ -106,7 +104,6 @@ define(function(require, exports, module) {
                     tile.updateParams(params);
                 }
             });
-
         };
 
         var tileMod = new Modifier({
