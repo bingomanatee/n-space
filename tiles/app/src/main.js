@@ -84,53 +84,21 @@ define(function (require, exports, module) {
 
     /* ------------- cursor buttons ----------------- */
 
-    function _moveTile(dir) {
-        return function (evt) {
-
-            //console.log('event: ', evt);
-            var n = evt.shiftKey ? 5 : 1;
-            switch (dir) {
-                case 'top':
-                    Tile.Tile.center.j += n;
-                    break;
-
-                case 'bottom':
-                    Tile.Tile.center.j -= n;
-                    break;
-
-                case 'left':
-                    Tile.Tile.center.i += n;
-                    ;
-                    break;
-
-                case 'right':
-                    Tile.Tile.center.i -= n;
-                    break;
-            }
-
-            tileMod.halt();
-
-            tileMod.setTransform(Transform.translate(Tile.Tile.center.i * settings.gridSize, Tile.Tile.center.j * settings.gridSize, -10),
-                {duration: 250});
-
-        }
-
-    }
 
     var leftButton = cursorButton('left');
-    leftButton.on('mousedown', _moveTile('left'));
+    leftButton.on('mousedown', display.move('left'));
     mainContext.add(new Modifier({origin: [0, 0.5]})).add(leftButton);
 
     var rightButton = cursorButton('right');
-    rightButton.on('mousedown', _moveTile('right'));
+    rightButton.on('mousedown', display.move('right'));
     mainContext.add(new Modifier({origin: [1, 0.5]})).add(rightButton);
 
     var topButton = cursorButton('top');
-    topButton.on('mousedown', _moveTile('top'));
+    topButton.on('mousedown', display.move('top'));
     mainContext.add(new Modifier({origin: [0.5, 0]})).add(topButton);
 
     var bottomButton = cursorButton('bottom');
-    bottomButton.on('mousedown', _moveTile('bottom'));
+    bottomButton.on('mousedown', display.move('bottom'));
     mainContext.add(new Modifier({origin: [0.5, 1]})).add(bottomButton);
 
     /* ------------------ tile display --------------------- */

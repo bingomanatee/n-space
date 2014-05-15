@@ -15,31 +15,108 @@ define(function (require, exports, module) {
     function Display(options) {
         View.call(this, _.defaults({}, options, Display.DEFAULTS));
         this.surfaceSpace = new NSPACE.World({
-            i: [-this.options.range, this.options.range],
-            j: [-this.options.range, this.options.range]
+            i: [-this.options.i_range, this.options.i_range],
+            j: [-this.options.j_range, this.options.j_range]
         });
         this.makeSurfaces();
     }
 
     Display.DEFAULTS = {
         pixelsPerTile: 50,
-        range: 25
+        i_range: 15,
+        j_range: 10
     };
 
     Display.prototype = Object.create(View.prototype);
 
     _.extend(Display.prototype, {
 
-        redrawFromTile: function(tile){
+        move: function (dir) {
+            return function (evt) {
+                this._move(evt, dir);
+            }.bind(this)
+
+        },
+
+        _move: function (evt, dir) {
+
+            //console.log('event: ', evt);
+            var n = evt.shiftKey ? 5 : 1;
+            var i_offset = 0, j_offset = 0;
+
+            switch (dir) {
+                case 'bottom':
+                    Tile.Tile.center.j += n;
+                    j_offset = -this.options.pixelsPerTile;
+                    break;
+
+                case 'top':
+                    Tile.Tile.center.j -= n;
+                    j_offset = this.options.pixelsPerTile;
+                    break;
+
+                case 'right':
+                    Tile.Tile.center.i += n;
+                    i_offset = -this.options.pixelsPerTile;
+                    break;
+
+                case 'left':
+                    Tile.Tile.center.i -= n;
+                    i_offset = this.options.pixelsPerTile;
+                    break;
+            }
+
+            this.scaleMod.halt();
+            this.scaleMod.setTransform(Transform.translate(
+                    i_offset, j_offset, -10),
+                {duration: 250}, this.redraw.bind(this));
+
+
+        },
+
+        redraw: function () {
+            console.log('start redraw');
+            debugger;
+            _.each(this.surfaces, function (surface) {
+                if (!this.redrawFromSurface(surface)) {
+                    surface.setClasses(['tile', 'empty', 'unselectable']);
+                }
+            }.bind(this));
+            debugger;
+            this.scaleMod.setTransform(Transform.translate(0, 0, -10));
+            debugger;
+            console.log('end redraw');
+        },
+
+        redrawFromSurface: function (surface) {
+            var rel_i = surface.i + Tile.Tile.center.i;
+            var rel_j = surface.j + Tile.Tile.center.j;
+            var coords = {i: rel_i, j: rel_j};
+
+            var found = false;
+            //   Tile.Tile.world.ifRange(coords, function(){
+            var reg = Tile.Tile.world.getRegistry(coords);
+            if (reg.has('tile')) {
+                var tile = reg.getFirst('tile');
+                surface.setClasses(['tile', tile.params.terrain, 'unselectable']);
+                found = true;
+            }
+            // });
+
+            return found;
+        },
+
+        redrawFromTile: function (tile) {
             var rel_i = tile.reg.loc.i + Tile.Tile.center.i;
             var rel_j = tile.reg.loc.j + Tile.Tile.center.j;
             var coords = {i: rel_i, j: rel_j};
 
-            this.surfaceSpace.ifRange(coords, function(){
-               var surface = this.surfaceSpace.getRegistry(coords).getFirst('surface');
-                if (surface){
+            this.surfaceSpace.ifRange(coords, function () {
+                var surface = this.surfaceSpace.getRegistry(coords).getFirst('surface');
+                if (surface) {
                     surface.setClasses(['tile', tile.params.terrain, 'unselectable']);
-                };
+                }
+                ;
             }.bind(this), _.identity);
         },
 
@@ -72,8 +149,8 @@ define(function (require, exports, module) {
                 this.surfaceSpace.add(surface, 'surface', iter);
 
             }.bind(this))
-                .dim('i', -this.options.range, this.options.range)
-                .dim('j', -this.options.range, this.options.range)();
+                .dim('i', -this.options.i_range, this.options.i_range)
+                .dim('j', -this.options.j_range, this.options.j_range)();
         }
 
     });
