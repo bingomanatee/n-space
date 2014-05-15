@@ -15,8 +15,8 @@ define(function (require, exports, module) {
     Tile.cache = [];
 
     Tile.mouseDown = function (evt, surface) {
-        var abs_i = surface.i - Tile.center.i;
-        var abs_j = surface.j - Tile.center.j;
+        var abs_i = surface.i + Tile.center.i;
+        var abs_j = surface.j + Tile.center.j;
 
         var coords = {i: abs_i, j: abs_j};
         Tile.world.ifRange(coords, function () {
@@ -36,7 +36,7 @@ define(function (require, exports, module) {
             }
 
             var display = require('./Display');
-            display.redrawFromTile(tile);
+            display.redrawFromSurface(surface);
 
         }, _.identity);
     };
@@ -44,6 +44,10 @@ define(function (require, exports, module) {
     Tile.world = new NSPACE.World({i: [-100, 100], j: [-100, 100]});
 
     Tile.center = {i: 0, j: 0};
+
+    Tile.recenter = function(){
+        Tile.center = {i: 0, j: 0};
+    };
 
     // returns a flat array
     function _cache(world) {

@@ -6,13 +6,14 @@ define(function(require, exports, module) {
     var Modifier = require('famous/modifiers/StateModifier');
     var View = require('famous/core/View');
     var _ = require('./lodash');
-    var Grid = require('famous/views/GridLayout');
+
     var Transform = require('famous/core/Transform');
     var buttonClasses = require('./buttonClasses');
     var buttonMenu = require('./buttonMenu');
     var InputSurface = require('famous/surfaces/InputSurface');
     var Tile = require('./Tile');
     var Toolbar = require('./Toolbar');
+    var display = require('./Display');
 
     // size constants
     var RANGE_SLIDER_HEIGHT = 16;
@@ -20,8 +21,8 @@ define(function(require, exports, module) {
 
     var RANGE_MIN_SIZE = 20;
     var RANGE_SLIDER_LABEL_WIDTH = 30;
-    var RANGE_MAX_SIZE = 100;
-    var SETTINGS_WIDTH = 500;
+    var RANGE_MAX_SIZE = 200;
+    var SETTINGS_WIDTH = 400;
     var CONTROL_BACK_COLOR = 'rgba(56, 100, 100, 0.125)';
     var SETTINGS_HEIGHT = 150;
 
@@ -52,6 +53,7 @@ define(function(require, exports, module) {
         this._initUndoButton();
         this._initZoomButton();
         this._initTileScaleTitle();
+        this._initCenterButton();
         //   this._updateTileScaleTitle();
     }
 
@@ -132,11 +134,34 @@ define(function(require, exports, module) {
             this.undoButtonNode.add(undoButton);
         },
 
+        _initCenterButton: function() {
+            var undoButton = new Surface({
+                content: 'Center',
+                classes: ['button'],
+                size: [150, this.options.buttonHeight]
+            });
+
+            undoButton.elementType = 'button';
+
+            undoButton.on('click', function() {
+                Tile.Tile.recenter();
+
+                display.redraw();
+            });
+
+            this.centerButtonNode = this.back.add(new Modifier({
+                origin: [1, 1],
+                transform: Transform.translate(0, -this.options.buttonHeight - 5)
+            }));
+
+            this.centerButtonNode.add(undoButton);
+        },
+
         _initRangeSlider: function() {
 
             /* ------------ range slider ---------------- */
 
-            this.gridSize = Math.round((RANGE_MIN_SIZE + RANGE_MAX_SIZE) / 2);
+            this.gridSize = 100;
 
             var rangeSlider = new InputSurface({
                 'type': 'range',
@@ -159,9 +184,7 @@ define(function(require, exports, module) {
                 var n = parseInt(value.target.value);
                 this.gridSize = n;
                 this._eventInput.emit('grid size', n);
-                console.log('range value: ', n);
-                this.updateTiles();
-
+                display.setScale(n/100);
                 title.setContent(this._rangeTitle());
             }.bind(this));
 
@@ -377,13 +400,6 @@ define(function(require, exports, module) {
             this.gridMode = mode;
 
             this.updateTiles();
-        },
-
-        updateTiles: function() {
-            window.$TILES.$redoTiles({
-                isHex: this.gridMode,
-                size: this.gridSize
-            })
         }
     });
 

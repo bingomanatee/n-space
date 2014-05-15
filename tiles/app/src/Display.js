@@ -7,10 +7,14 @@ define(function (require, exports, module) {
     var Surface = require('famous/core/Surface');
     var Transform = require('famous/core/Transform');
     var StateModifier = require('famous/modifiers/StateModifier');
+    var Draggable = require('famous/modifiers/Draggable');
+
+
     var View = require('famous/core/View');
     var Fools = require('fools');
     var Tile = require('./Tile');
     var NSPACE = require('./n-space');
+    var Z = 10;
 
     function Display(options) {
         View.call(this, _.defaults({}, options, Display.DEFAULTS));
@@ -24,7 +28,8 @@ define(function (require, exports, module) {
     Display.DEFAULTS = {
         pixelsPerTile: 50,
         i_range: 15,
-        j_range: 10
+        j_range: 10,
+        gridScale: 1
     };
 
     Display.prototype = Object.create(View.prototype);
@@ -36,6 +41,13 @@ define(function (require, exports, module) {
                 this._move(evt, dir);
             }.bind(this)
 
+        },
+
+        setScale: function (scale) {
+            this.options.gridScale = scale;
+            this.scaleMod.setTransform(
+                this._transformScaleMod()
+            );
         },
 
         _move: function (evt, dir) {
@@ -67,24 +79,30 @@ define(function (require, exports, module) {
             }
 
             this.scaleMod.halt();
-            this.scaleMod.setTransform(Transform.translate(
-                    i_offset, j_offset, -10),
-                {duration: 250}, this.redraw.bind(this));
 
+            this.scaleMod.setTransform(
+                this._transformScaleMod(i_offset, j_offset),
+                {duration: 0}, this.redraw.bind(this));
 
+        },
+
+        _transformScaleMod: function (i_offset, j_offset) {
+            if (!i_offset) i_offset = 0;
+            if (!j_offset) j_offset = 0;
+            var out =  Transform.thenMove(Transform.scale(this.options.gridScale, this.options.gridScale, this.options.gridScale),
+                [i_offset, j_offset, Z]);
+            console.log('tsm: ', out);
+            return out;
         },
 
         redraw: function () {
             console.log('start redraw');
-            debugger;
+            this.scaleMod.setTransform(this._transformScaleMod());
             _.each(this.surfaces, function (surface) {
                 if (!this.redrawFromSurface(surface)) {
                     surface.setClasses(['tile', 'empty', 'unselectable']);
                 }
             }.bind(this));
-            debugger;
-            this.scaleMod.setTransform(Transform.translate(0, 0, -10));
-            debugger;
             console.log('end redraw');
         },
 
@@ -122,7 +140,16 @@ define(function (require, exports, module) {
 
         makeSurfaces: function () {
             this.scaleMod = new StateModifier({
+                transform: this._transformScaleMod()
             });
+
+            this.drag = new Draggable();
+            this.drag.on('update', function(p){
+                console.log('drag position: ', p);
+            });
+            this.drag.on('end', function(e){
+                console
+            })
 
             this.root = this._node.add(this.scaleMod);
             this.surfaces = [];
@@ -136,7 +163,7 @@ define(function (require, exports, module) {
                 var surface = new Surface({
                     classes: ['tile', 'empty', 'unselectable'],
                     mod: mod,
-                    size: [this.options.pixelsPerTile, this.options.pixelsPerTile]
+                    size: [this.options.pixelsPerTile + 2, this.options.pixelsPerTile + 2]
                 });
                 _.extend(surface, iter);
 
@@ -144,9 +171,10 @@ define(function (require, exports, module) {
                     Tile.Tile.mouseDown(evt, surface)
                 }.bind(this));
 
-                this.root.add(mod).add(surface);
+                this.root.add(mod).add(this.drag).add(surface);
                 this.surfaces.push(surface);
                 this.surfaceSpace.add(surface, 'surface', iter);
+                surface.pipe(this.drag);
 
             }.bind(this))
                 .dim('i', -this.options.i_range, this.options.i_range)
@@ -155,6 +183,9 @@ define(function (require, exports, module) {
 
     });
 
-    module.exports = new Display();
+    module.exports = new Display({
+        i_range: Math.max(15, 4 + Math.floor(window.innerWidth / 100)),
+        j_range: Math.max(10, 4 + Math.floor(window.innerHeight / 100))
+    });
 
 });
