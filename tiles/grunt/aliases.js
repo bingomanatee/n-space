@@ -36,8 +36,8 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('lint', [
-    'jscs',
-    'eslint'
+    'jscs'//,
+ //   'eslint'
   ]);
   
   grunt.registerTask('test', [

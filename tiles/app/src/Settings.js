@@ -22,6 +22,8 @@ define(function(require, exports, module) {
     var RANGE_SLIDER_LABEL_WIDTH = 30;
     var RANGE_MAX_SIZE = 100;
     var SETTINGS_WIDTH = 500;
+    var CONTROL_BACK_COLOR = 'rgba(56, 100, 100, 0.125)';
+    var SETTINGS_HEIGHT = 150;
 
     var ZOOM_BUTTON_WIDTH = 100;
     var TS_TITLE_WIDTH = 250;
@@ -52,8 +54,6 @@ define(function(require, exports, module) {
         this._initTileScaleTitle();
         //   this._updateTileScaleTitle();
     }
-
-    module.exports = Settings;
 
     Settings.DEFAULTS = {
         width: SETTINGS_WIDTH,
@@ -99,7 +99,7 @@ define(function(require, exports, module) {
             undoButton.elementType = 'button';
 
             undoButton.on('click', function() {
-                if (Tile.cache.length) {
+                if (Tile.Tile.cache.length) {
                     var world = window.$TILES;
                     _.each(world.registries(), function(reg) {
                         if (reg.has('tile')) {
@@ -108,7 +108,7 @@ define(function(require, exports, module) {
                         }
                     });
 
-                    var cache = Tile.cache.pop();
+                    var cache = Tile.Tile.cache.pop();
 
                     for (var n = 0; n < cache.length; n += 3) {
                         var i = cache[n];
@@ -386,4 +386,11 @@ define(function(require, exports, module) {
             })
         }
     });
+
+
+    module.exports = new Settings({
+        color: CONTROL_BACK_COLOR,
+        height: SETTINGS_HEIGHT
+    });
+
 });

@@ -176,12 +176,12 @@ _.extend(NSPACE.Register.prototype, {
         return this.content.hasOwnProperty(iType) && this.content[iType].length;
     },
 
-    add: function(item, iType) {
+    add: function(item, iType, replace) {
         if (!iType) {
             iType = '___content';
         }
 
-        if (this.content[iType]) {
+        if ((!replace) && this.content[iType]) {
             this.content[iType].push(item);
         } else {
             this.content[iType] = [item];
