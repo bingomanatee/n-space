@@ -24,19 +24,40 @@ define(function (require, exports, module) {
                 return;
             }
             var reg = Tile.world.getRegistry(coords);
-            var tile;
-            if (!reg.has(coords, 'tile')) {
-                tile = new Tile(reg, {
-                    terrain: settings.options.terrain
-                });
-                reg.add(tile, 'tile', true);
+            var regs;
+            if (event.shiftKey){
+                regs = reg.neighbors();
+                if (event.altKey){
+                    regs = _.flatten(_.map(regs, function(reg){
+                        return reg.neighbors();
+                    }));
+                    regs = _.flatten(_.map(regs, function(reg){
+                        return reg.neighbors();
+                    }));
+                }
             } else {
-                tile = reg.getFirst('tile');
-                tile.params.terrian = settings.options.terrain;
+                regs = [reg];
             }
 
+            _.each(regs, function(reg){
+                var tile;
+                if (!reg.has(coords, 'tile')) {
+                    tile = new Tile(reg, {
+                        terrain: settings.options.terrain
+                    });
+                    reg.add(tile, 'tile', true);
+                } else {
+                    tile = reg.getFirst('tile');
+                    tile.params.terrian = settings.options.terrain;
+                }
+            });
+
             var display = require('./Display');
-            display.redrawFromSurface(surface);
+            if (event.shiftKey) {
+                display.redraw(true);
+            } else {
+                display.redrawFromSurface(surface);
+            }
 
         }, _.identity);
     };

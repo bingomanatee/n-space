@@ -83,6 +83,12 @@ _.extend(NSPACE.Register.prototype, {
                 delete this.content[iType];
             }
         }
+    },
+
+    neighbors: function(){
+        var args = _.toArray(arguments);
+        args.unshift(this.loc);
+        return this.world.neighbors.apply(this.world, args);
     }
 
 });

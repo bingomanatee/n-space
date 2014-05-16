@@ -36,6 +36,10 @@ define(function(require, exports, module) {
 
     _.extend(Display.prototype, {
 
+        center: function(){
+            this.drag.setPosition([0,0]);
+        },
+
         move: function(dir) {
             return function(evt) {
                 this._move(evt, dir);
@@ -91,30 +95,30 @@ define(function(require, exports, module) {
             if (!i_offset) {
                 i_offset = 0;
             }
-            if (!j_offset){
+            if (!j_offset) {
                 j_offset = 0;
             }
 
             var out = Transform.thenMove(Transform.scale(this.options.gridScale, this.options.gridScale, this.options.gridScale),
                 [i_offset, j_offset, Z]);
-           // console.log('tsm: ', out);
+            // console.log('tsm: ', out);
             return out;
         },
 
         redraw: function(noTransform) {
-            console.log('start redraw');
-           if (!noTransform) {
-               this.scaleMod.setTransform(this._transformScaleMod());
-           }
+            //  console.log('start redraw');
+            if (!noTransform) {
+                this.scaleMod.setTransform(this._transformScaleMod());
+            }
             _.each(this.surfaces, function(surface) {
                 if (!this.redrawFromSurface(surface)) {
                     surface.setClasses(['tile', 'empty', 'unselectable']);
                 }
             }.bind(this));
-            console.log('end redraw');
+            //  console.log('end redraw');
         },
 
-        redrawFromSurface: function(surface, watch) {
+        redrawFromSurface: function(surface) {
             var rel_i = surface.i + Tile.Tile.center.i;
             var rel_j = surface.j + Tile.Tile.center.j;
             var coords = {i: rel_i, j: rel_j};
@@ -124,7 +128,6 @@ define(function(require, exports, module) {
             var reg = Tile.Tile.world.getRegistry(coords);
             if (reg.has('tile')) {
                 var tile = reg.getFirst('tile');
-                if (watch) debugger;
                 surface.setClasses(['tile', tile.params.terrain, 'unselectable']);
                 found = true;
             } else {
@@ -149,13 +152,11 @@ define(function(require, exports, module) {
         },
 
         endDrag: function(e) {
-            Tile.Tile.center.i = -Math.round(e.position[0] / this.options.pixelsPerTile);
-            Tile.Tile.center.j = -Math.round(e.position[1] / this.options.pixelsPerTile);
-            this.scaleMod.setTransform(this._transformScaleMod());
-            this.redraw(true);
-            _.each(this.surfaces, function(surface) {
-                this.redrawFromSurface(surface);
-            }, this);
+            if (this._dragInit){
+                Tile.Tile.center.i = -Math.round(e.position[0] / this.options.pixelsPerTile);
+                Tile.Tile.center.j = -Math.round(e.position[1] / this.options.pixelsPerTile);
+                this.redraw();
+            }
         },
 
         showDrag: function(e) {
@@ -166,8 +167,8 @@ define(function(require, exports, module) {
             if (!this._dragInit) {
 
                 var travel = Math.abs(e.position[0] - this._dragFirst[0]) + Math.abs(e.position[1] - this._dragFirst[1]);
-                console.log('travel: ', travel, e.position.join(','), this._dragFirst.join(':'));
-                if (travel >50) {
+                //   console.log('travel: ', travel, e.position.join(','), this._dragFirst.join(':'));
+                if (travel > 50) {
                     Tile.Tile.center.i = i;
                     Tile.Tile.center.j = j;
                     this._dragInit = true;
@@ -175,15 +176,14 @@ define(function(require, exports, module) {
                 } else {
                     return;
                 }
+            } else {
+                this.scaleMod.setTransform(this._transformScaleMod(i, j));
             }
 
-            this.scaleMod.setTransform(this._transformScaleMod(i, j));
-
-            console.log(i, j);
         },
 
         startDrag: function(e) {
-            console.log('start drag');
+            // console.log('start drag');
             this._dragInit = false;
             this._dragFirst = e.position.slice(0);
             this._dragStartCenter = _.clone(Tile.Tile.center);
@@ -209,7 +209,6 @@ define(function(require, exports, module) {
             }.bind(this));
 
             this.drag.on('end', function(e) {
-                console.log('end', e);
                 this.endDrag(e);
             }.bind(this));
 
@@ -237,14 +236,14 @@ define(function(require, exports, module) {
                 });
                 _.extend(surface, iter);
 
-                surface.on('mousedown', function(){
+                surface.on('mousedown', function() {
                     this.dragged = false;
                 }.bind(this));
 
                 surface.on('click', function(evt) {
-                   if(!this.dragged){
-                       Tile.Tile.mouseDown(evt, surface);
-                   }
+                    if (!this.dragged) {
+                        Tile.Tile.mouseDown(evt, surface);
+                    }
                 }.bind(this));
 
                 surface.pipe(this.drag);

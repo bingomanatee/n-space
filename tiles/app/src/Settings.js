@@ -145,7 +145,7 @@ define(function(require, exports, module) {
 
             undoButton.on('click', function() {
                 Tile.Tile.recenter();
-
+                display.center();
                 display.redraw();
             });
 
@@ -284,7 +284,7 @@ define(function(require, exports, module) {
 
             this.zoomInButton = new ToggleButton({
                 size: [ZOOM_BUTTON_WIDTH, this.options.buttonHeight],
-                content: 'Zoom In'
+                content: 'Tile Unit'
             });
 
             this.zoomInButton.on('click', this.onZoomIn.bind(this));
