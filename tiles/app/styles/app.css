@@ -129,7 +129,7 @@ html {
     background-size: 100%;
 }
 .tile.empty{
-    background-image: url(/content/images/tile_empty@2x.png)
+    background-image: url(/content/images/tile@2x.png)
 }
 .tile.forest{
     background-image: url(/content/images/forest3x.png)
