@@ -99,7 +99,15 @@ define(function(require, exports, module) {
                 j_offset = 0;
             }
 
-            var out = Transform.thenMove(Transform.scale(this.options.gridScale, this.options.gridScale, this.options.gridScale),
+            var scale = Transform.scale(this.options.gridScale, this.options.gridScale, this.options.gridScale);
+            if (this.rotateX || this.rotateY){
+                if (Math.abs(this.rotateX) > Math.abs(this.rotateY)){
+                    scale = Transform.multiply(scale, Transform.rotateX(-this.rotateX));
+                } else {
+                    scale = Transform.multiply(scale, Transform.rotateY(this.rotateY));
+                }
+            }
+            var out = Transform.thenMove(scale,
                 [i_offset, j_offset, Z]);
             // console.log('tsm: ', out);
             return out;
@@ -152,6 +160,7 @@ define(function(require, exports, module) {
         },
 
         endDrag: function(e) {
+            this.rotateX = this.rotateY = 0;
             if (this._dragInit){
                 Tile.Tile.center.i = -Math.round(e.position[0] / this.options.pixelsPerTile);
                 Tile.Tile.center.j = -Math.round(e.position[1] / this.options.pixelsPerTile);
@@ -164,10 +173,21 @@ define(function(require, exports, module) {
             var i = Math.round((e.position[0] - this._dragFirst[0]) * this.options.gridScale) + this._dragStartCenter.i;
             var j = Math.round((e.position[1] - this._dragFirst[1]) * this.options.gridScale) + this._dragStartCenter.j;
 
-            if (!this._dragInit) {
+            var jn = Math.sqrt(Math.abs(j));
+            if (j < 0) {
+                jn *= -1;
+            }
 
+            var ir = Math.sqrt(Math.abs(i));
+            if (i < 0){
+                ir *= -1;
+            }
+
+            this.rotateX = (jn * Math.PI)/200;
+            this.rotateY = (ir * Math.PI)/170;
+
+            if (!this._dragInit) {
                 var travel = Math.abs(e.position[0] - this._dragFirst[0]) + Math.abs(e.position[1] - this._dragFirst[1]);
-                //   console.log('travel: ', travel, e.position.join(','), this._dragFirst.join(':'));
                 if (travel > 50) {
                     Tile.Tile.center.i = i;
                     Tile.Tile.center.j = j;

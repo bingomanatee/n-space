@@ -21,6 +21,7 @@ define(function (require, exports, module) {
 
     // create the main context
     var mainContext = Engine.createContext();
+    mainContext.setPerspective(1000);
 
     /* ================= main ================== */
 
@@ -108,32 +109,5 @@ define(function (require, exports, module) {
         transform: Transform.translate(0, 0, -10)
     })).add(display);
 
-    /*    (function initTiles() {
-     Tile.settings = settings;
-     Tile.terrainToolbar = terrainToolbar;
-
-     window.$TILES = new NSPACE.World({i: [-100, 100], j: [-100, 100]});
-     window.$TILES.$redoTiles = function(params) {
-     _.each(this.registries(), function(reg) {
-     if (!reg.has('tile')) {
-     reg.add(new Tile(reg, params), 'tile');
-     } else {
-     var tile = reg.getFirst('tile');
-     tile.updateParams(params);
-     }
-     });
-     };
-
-     var tileMod = new Modifier({
-     transform: Transform.translate(0, 0, -10),
-     origin: [0.5, 0.5]
-     });
-
-     Tile.tileRoot(mainContext.add(tileMod));
-
-
-     })();
-
-     settings.updateTiles();*/
 
 });
