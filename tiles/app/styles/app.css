@@ -125,6 +125,16 @@ html {
     background-image: url(/content/images/mtn3x_off.png)
 }
 
+.toolbar .button.town {
+    background-image: url(/content/images/towns/t_town_toolbar.png);
+    background-size: 50px 50px;
+}
+
+.toolbar .button.town.selected {
+    background-image: url(/content/images/towns/t_town_toolbar_selected.png);
+    background-size: 50px 50px;
+}
+
 .tile {
     background-size: 100%;
 }
@@ -143,6 +153,7 @@ html {
 .tile.mtn{
     background-image: url(/content/images/mtn3x.png)
 }
+
 
 .tilescale {
     background-repeat: no-repeat;
@@ -183,3 +194,26 @@ html {
      -ms-user-select: none;
      user-select: none;
  }
+
+.city {
+    background-repeat: no-repeat;
+    background-size: 50px 50px;
+}
+
+.city.city {
+    background-image: url(/content/images/towns/city.png)
+}
+
+.city.town {
+    background-image: url(/content/images/towns/town.png)
+}
+
+.city.village {
+
+    background-image: url(/content/images/towns/village.png)
+}
+
+.city.fort {
+
+    background-image: url(/content/images/towns/fort.png)
+}

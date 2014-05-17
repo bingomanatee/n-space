@@ -132,11 +132,21 @@ define(function(require, exports, module) {
             var coords = {i: rel_i, j: rel_j};
 
             var found = false;
-            //   Tile.Tile.world.ifRange(coords, function(){
+
             var reg = Tile.Tile.world.getRegistry(coords);
             if (reg.has('tile')) {
+                
                 var tile = reg.getFirst('tile');
-                surface.setClasses(['tile', tile.params.terrain, 'unselectable']);
+                if (tile.params.terrain) {
+                    surface.setClasses(['tile', tile.params.terrain, 'unselectable']);
+                } else {
+                    surface.setClasses(['tile', 'empty', 'unselectable']);
+                }
+                if (tile.params.town){
+                    surface.setContent('<img src="/content/images/towns/t_town.png" width=50 height=50 />');
+                } else {
+                    surface.setContent('');
+                }
                 found = true;
             } else {
                 surface.setClasses(['tile', 'empty', 'unselectable']);

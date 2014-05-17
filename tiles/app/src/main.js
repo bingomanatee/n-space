@@ -69,8 +69,14 @@ define(function (require, exports, module) {
                 click: function () {
                     settings.options.terrain = terrainToolbar.terrain = 'mtn'
                 }
+            },
+            {
+                label: 'town',
+                classes: ['town'],
+                click: function () {
+                    settings.options.terrain = terrainToolbar.terrain = 'town'
+                }
             }
-
         ]);
 
         return terrainToolbar;

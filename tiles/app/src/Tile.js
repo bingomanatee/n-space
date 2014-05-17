@@ -7,9 +7,11 @@ define(function (require, exports, module) {
     var NSPACE = require('./n-space');
     var settings = require('./Settings');
 
+    var tid = 0;
     function Tile(reg, params) {
         this.reg = reg;
         this.params = params;
+        this.id = ++tid;
     }
 
     Tile.cache = [];
@@ -25,7 +27,7 @@ define(function (require, exports, module) {
             }
             var reg = Tile.world.getRegistry(coords);
             var regs;
-            if (event.shiftKey){
+            if (event.shiftKey && (!settings.options.terrain == 'town')){
                 regs = reg.neighbors();
                 if (event.altKey){
                     regs = _.flatten(_.map(regs, function(reg){
@@ -41,15 +43,14 @@ define(function (require, exports, module) {
 
             _.each(regs, function(reg){
                 var tile;
-                if (!reg.has(coords, 'tile')) {
-                    tile = new Tile(reg, {
-                        terrain: settings.options.terrain
-                    });
+                if (!reg.has('tile')) {
+                    tile = new Tile(reg, { });
                     reg.add(tile, 'tile', true);
                 } else {
                     tile = reg.getFirst('tile');
-                    tile.params.terrian = settings.options.terrain;
                 }
+                tile.setTerrain( settings.options.terrain)
+                reg.add(tile, 'tile', true);
             });
 
             var display = require('./Display');
@@ -100,8 +101,11 @@ define(function (require, exports, module) {
         },
 
         setTerrain: function (terrain) {
-            this.terrain = terrain;
-            this._tileSurface.setClasses(['tile', this.terrain, 'unselectable']);
+            if (terrain == 'town'){
+                this.params.town = 'town';
+            } else {
+                this.params.terrain = terrain;
+            }
         }
 
     });
