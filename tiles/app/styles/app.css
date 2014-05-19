@@ -11,7 +11,7 @@ html {
     font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
 
-.control-surface button {
+.control-surface .button {
     border: 2px solid rgba(200,200,200, 0);
     outline: 2px solid rgba(0, 0, 0, 0.0);
     text-align: center;
@@ -21,16 +21,16 @@ html {
     background-color: rgba(0,0,0,0.125);
 }
 
-.control-surface button.selected {
+.control-surface .selected {
     border-color: rgba(204, 51, 0, 0.125);
     outline-color: rgba(123, 40, 0, 0.75);
     background-color: white;
 }
 
-
 /* ------------- control-surface shared properties ------------------- */
 
 .control-surface {
+    background-color: rgb(240,240,240);
     -webkit-box-shadow: inset 6px 12px 30px 0px rgba(28, 50, 50, 0.25);
     -moz-box-shadow: inset 6px 12px 30px 0px rgba(28, 50, 50, 0.25);
     box-shadow: inset 6px 12px 30px 0px rgba(28, 50, 50, 0.25);
@@ -67,24 +67,40 @@ html {
     padding: 0
 }
 
+
+.control-surface.dialog {
+    background-color: rgb(255,255,255);
+    -webkit-box-shadow: inset 6px 12px 30px 0px rgba(20, 20, 50, 0.2);
+    -moz-box-shadow: inset 6px 12px 30px 0px rgba(20, 20, 50, 0.2);
+    box-shadow: inset 6px 12px 30px 0px rgba(20, 20, 50, 0.2);
+    border-radius: 5px;
+    -moz-border-radius: 2px;
+   border: 2px solid rgb(100,100,125);
+}
+
+.control-surface.dialog h2 {
+    text-align: center;
+    font-size: 100%;
+    opacity: 1 !important;
+}
 /* -------------- settings ------------------- */
 
-.settings.control-surface button.mode-button {
+.settings.control-surface .mode-button {
     min-width: 9em;
 }
 
 /* ------------- toolbars  ------------------- */
 
-.toolbar .control-surface button {
+.toolbar .control-surface .button {
     font-family: "Helvetica Condensed", "Helvetica Neue Light", "Helvetica Neue", Helvetica, sans-serif;
 }
 
-.toolbar button {
+.toolbar .button {
     padding: 0;
     font-family: "Helvetica Condensed", "Helvetica Neue Light", "Helvetica Neue", Helvetica, sans-serif;
 }
 
-.toolbar button p {
+.toolbar .button p {
     padding: 0;
     margin: 0;
     padding: 3px;
@@ -137,6 +153,10 @@ html {
 
 .tile {
     background-size: 100%;
+}
+.tile.outside{
+    background-image: url(/content/images/tile_outside.png);
+    background-size: 54px 54px;
 }
 .tile.empty{
     background-image: url(/content/images/tile@2x.png)

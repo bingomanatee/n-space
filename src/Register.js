@@ -89,6 +89,11 @@ _.extend(NSPACE.Register.prototype, {
         var args = _.toArray(arguments);
         args.unshift(this.loc);
         return this.world.neighbors.apply(this.world, args);
+    },
+
+    copy: function(reg){
+        //@todo: validate same loc?
+        this.content = _.clone(reg.content);
     }
 
 });

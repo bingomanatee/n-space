@@ -5,7 +5,7 @@
 /*global NSPACE */
 /*jshint -W089 */
 /*global console */
-NSPACE.World = function(dims) {
+NSPACE.World = function (dims) {
     if (dims) {
         this.init(dims);
     } else {
@@ -15,9 +15,9 @@ NSPACE.World = function(dims) {
 
 _.extend(NSPACE.World.prototype, {
 
-    serialize: function() {
+    serialize: function () {
         var reg = _.flatten(this.cells);
-        reg = _.map(reg, function(r) {
+        reg = _.map(reg, function (r) {
             return r.serialize();
         });
 
@@ -27,11 +27,11 @@ _.extend(NSPACE.World.prototype, {
         return _.sortBy.apply(_, dims);
     },
 
-    dimNames: function() {
+    dimNames: function () {
         return _.pluck(this.dimArray, 'name');
     },
 
-    add: function(item, iType, loc) {
+    add: function (item, iType, loc) {
         this.goodType(iType, 'add');
         this.goodLoc(loc, 'add');
         var reg = this.getRegistry(loc);
@@ -42,7 +42,7 @@ _.extend(NSPACE.World.prototype, {
         }
     },
 
-    remove: function(item, iType, loc) {
+    remove: function (item, iType, loc) {
         this.goodType(iType);
         if (loc) {
             this.goodLoc(loc, 'remove');
@@ -53,13 +53,13 @@ _.extend(NSPACE.World.prototype, {
                 throw ('cannot get registry');
             }
         } else {
-            _.each(this.registries(), function(reg) {
+            _.each(this.registries(), function (reg) {
                 reg.remove(item, iType);
             });
         }
     },
 
-    goodType: function(iType, msg) {
+    goodType: function (iType, msg) {
         if (!(iType && (_.isString(iType) || _.isNumber(iType)))) {
             throw 'World.' + (msg || 'goodType') + ': missing or non-string /number type';
         }
@@ -73,7 +73,7 @@ _.extend(NSPACE.World.prototype, {
      * @param loc {Object}
      * @param msg {String} -- optional
      */
-    goodLoc: function(loc, msg) {
+    goodLoc: function (loc, msg) {
         if (!(loc && _.isObject(loc))) {
             throw  'World.' + (msg || 'goodLoc') + ': missing or non-object location';
         }
@@ -92,7 +92,7 @@ _.extend(NSPACE.World.prototype, {
      * @param goodCheck {Boolean} optional -- validate that the loc is a valid location;
      * @returns {boolean}
      */
-    locInRange: function(loc, goodCheck) {
+    locInRange: function (loc, goodCheck) {
         if (goodCheck) {
             try {
                 this.goodLoc(loc);
@@ -101,7 +101,7 @@ _.extend(NSPACE.World.prototype, {
             }
 
         }
-        return !_.find(loc, function(value, name) {
+        return !_.find(loc, function (value, name) {
             var range = this.dims[name];
             if (value < range[0]) {
                 return true;
@@ -113,10 +113,10 @@ _.extend(NSPACE.World.prototype, {
         }, this);
     },
 
-    neighborsExcept: function(loc) {
+    neighborsExcept: function (loc) {
         var args = _.toArray(arguments);
         var neighbors = this.neighbors.apply(this, args);
-        return _.reject(neighbors, function(reg) {
+        return _.reject(neighbors, function (reg) {
             if (reg.equals(loc)) {
                 //console.log('found ', require('util').inspect(loc));
                 return true;
@@ -135,7 +135,7 @@ _.extend(NSPACE.World.prototype, {
      * however dimensions can also be passed in as subsequent parameters.
      * @param loc {object}
      */
-    neighbors: function(loc) {
+    neighbors: function (loc) {
         this.goodLoc(loc, 'neighbors');
 
         var dims;
@@ -151,7 +151,7 @@ _.extend(NSPACE.World.prototype, {
         }
 
         var out = [];
-        var loop = Fools.loop(function(item) {
+        var loop = Fools.loop(function (item) {
             //   console.log('getting neighbor', require('util').inspect(item));
             var l = _.defaults({}, item, loc);
 
@@ -160,7 +160,7 @@ _.extend(NSPACE.World.prototype, {
             }
             out.push(this.getRegistry(l));
         }.bind(this));
-        _.each(dims, function(name) {
+        _.each(dims, function (name) {
             if (!this.dims.hasOwnProperty(name)) {
                 throw ('neighbors:bad dim ' + name);
             }
@@ -175,18 +175,18 @@ _.extend(NSPACE.World.prototype, {
         return out;
     },
 
-    registries: function() {
+    registries: function () {
         if (!this._registries) {
             this._registries = _.flatten(this.cells);
         }
         return this._registries;
     },
 
-    getRegistry: function(loc) {
+    getRegistry: function (loc) {
         this.goodLoc(loc, 'getRegistry');
         var self = this;
         var coords = _.pluck(this.dimArray, 'name');
-        var reg = _.reduce(coords, function(cells, name) {
+        var reg = _.reduce(coords, function (cells, name) {
             if (!(loc.hasOwnProperty(name))) {
                 throw ('World.getRegistry:loc missing property ' + name);
             }
@@ -207,7 +207,7 @@ _.extend(NSPACE.World.prototype, {
         return reg;
     },
 
-    goodDims: function() {
+    goodDims: function () {
         var count = 0;
         for (var dim in this.dims) {
             ++count;
@@ -241,40 +241,41 @@ _.extend(NSPACE.World.prototype, {
         }
     },
 
-    ifRange: function(range, ifInRange, ifOutsideRange) {
+    ifRange: function (range, ifInRange, ifOutsideRange, ifErr) {
 
         var g = Fools.each();
-       // debugger;
+        // debugger;
 
-        _.each(range, function(value, dim){
-             if (_.isNumber(value)){
-                 g.add(function(reg){
-                     return (reg.loc[dim] === value);
-                 });
-             } else if (_.isArray(value)){
-                 g.add(function(reg){
-                     return (reg.loc[dim] >= value[0] && reg.loc[dim] <= value[1]);
-                 });
-             } else if (_.isFunction(value)){
-                 return value(reg.loc[dim]);
-             }
+        _.each(range, function (value, dim) {
+            if (_.isNumber(value)) {
+                g.add(function (reg) {
+                    return (reg.loc[dim] === value);
+                });
+            } else if (_.isArray(value)) {
+                g.add(function (reg) {
+                    return (reg.loc[dim] >= value[0] && reg.loc[dim] <= value[1]);
+                });
+            } else if (_.isFunction(value)) {
+                return value(reg.loc[dim]);
+            }
         });
 
-        var f = Fools.fork(g).then(ifInRange).else(ifOutsideRange).err(function(err){
-            console.log('err: ', err);
-        });
+        var f = Fools.fork(g)
+            .then(ifInRange)
+            .else(ifOutsideRange)
+            .err(ifErr || _.identity);
 
-        _.each(this.registries(),f);
+        _.each(this.registries(), f);
     },
 
-    init: function(dims) {
+    init: function (dims) {
         if (dims) {
             this.dims = dims;
         }
         this.goodDims();
         this._registries = false;
 
-        this.dimArray = _.map(this.dims, function(range, name) {
+        this.dimArray = _.map(this.dims, function (range, name) {
             return {name: name, min: range[0], max: range[1]};
         });
 
@@ -292,7 +293,7 @@ _.extend(NSPACE.World.prototype, {
                 var max = dim.max;
                 min = Math.floor(min);
 
-                return _.map(_.range(min, max + 1), function(value) {
+                return _.map(_.range(min, max + 1), function (value) {
                     var loc = {};
                     loc[name] = value;
                     _.extend(loc, location);
@@ -307,5 +308,21 @@ _.extend(NSPACE.World.prototype, {
 
         this.cells = digestDims(null, this.dimArray);
 
+    },
+
+    copy: function (world) {
+        _.each(Fools.pairs(world.registries(), this.registries(), function (r1, r2) {
+            for (var name in r1.loc) {
+                if (r2[name] != r1[name]) {
+                    return false;
+                }
+            }
+
+            return true;
+        }), function(pair){
+            var worldReg = pair[0];
+            var myReg = pair[1];
+            myReg.copy(worldReg);
+        });
     }
 });

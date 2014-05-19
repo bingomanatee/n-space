@@ -9,6 +9,7 @@ define(function (require, exports, module) {
     var Tile = require('./Tile');
     var Toolbar = require('./Toolbar');
     var settings = require('./Settings');
+    var identity = require('./Identity');
     var display = require('./Display');
 
     var cursorButton = require('./cursorButton');
@@ -17,7 +18,7 @@ define(function (require, exports, module) {
     var TOOL_MARGIN = 15;
     var TOOLBAR_BUTTON_SIZE = 60;
     var TOOLBAR_BUTTON_PADDING = 6;
-    var CONTROL_BACK_COLOR = 'rgba(56, 100, 100, 0.125)';
+    var CONTROL_BACK_COLOR = 'rgb(220,220,255)';
 
     // create the main context
     var mainContext = Engine.createContext();
@@ -27,11 +28,19 @@ define(function (require, exports, module) {
 
     var settingsXoffset = (2 * TOOL_MARGIN) + (2 * TOOLBAR_BUTTON_SIZE) + (2 * TOOLBAR_BUTTON_PADDING);
 
-    var settingsMod = new Modifier({origin: [0, 0],
+    var settingsMod = new Modifier({
+        origin: [0, 0],
         transform: Transform.translate(settingsXoffset, TOOL_MARGIN, 0)
     });
 
     mainContext.add(settingsMod).add(settings);
+
+    var identityMod = new Modifier({
+        origin: [1, 0],
+        transform: Transform.translate(-TOOL_MARGIN, TOOL_MARGIN, 0)
+    });
+
+    mainContext.add(identityMod).add(identity);
 
     var terrainToolbar = (function initToolbar() {
 
@@ -115,5 +124,6 @@ define(function (require, exports, module) {
         transform: Transform.translate(0, 0, -10)
     })).add(display);
 
+    module.exports = mainContext;
 
 });

@@ -436,7 +436,7 @@ _.extend(NSPACE.World.prototype, {
         }
     },
 
-    ifRange: function(range, ifInRange, ifOutsideRange) {
+    ifRange: function(range, ifInRange, ifOutsideRange, ifErr) {
 
         var g = Fools.each();
        // debugger;
@@ -455,9 +455,10 @@ _.extend(NSPACE.World.prototype, {
              }
         });
 
-        var f = Fools.fork(g).then(ifInRange).else(ifOutsideRange).err(function(err){
-            console.log('err: ', err);
-        });
+        var f = Fools.fork(g)
+            .then(ifInRange)
+            .else(ifOutsideRange)
+            .err(ifErr || _.identity);
 
         _.each(this.registries(),f);
     },

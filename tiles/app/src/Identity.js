@@ -1,4 +1,4 @@
-define(function(require, exports, module) {
+define(function (require, exports, module) {
 
     var ContainerSurface = require('famous/surfaces/ContainerSurface');
     var Surface = require('famous/core/Surface');
@@ -14,6 +14,7 @@ define(function(require, exports, module) {
     var Tile = require('./Tile');
     var Toolbar = require('./Toolbar');
     var display = require('./Display');
+    var RenderNode = require('famous/core/RenderNode');
 
     // size constants
     var RANGE_SLIDER_HEIGHT = 16;
@@ -22,42 +23,35 @@ define(function(require, exports, module) {
     var RANGE_MIN_SIZE = 20;
     var RANGE_SLIDER_LABEL_WIDTH = 30;
     var RANGE_MAX_SIZE = 200;
-    var SETTINGS_WIDTH = 400;
+    var IDENTITY_WIDTH = 400;
     var CONTROL_BACK_COLOR = 'rgb(240,255,240)';
-    var SETTINGS_HEIGHT = 120;
+    var IDENTITY_HEIGHT = 120;
 
     var ZOOM_BUTTON_WIDTH = 100;
     var TS_TITLE_WIDTH = 250;
 
-    function Settings(options) {
-        View.call(this, _.defaults({}, options, Settings.DEFAULTS));
+    function Identity(options) {
+        View.call(this, _.defaults({}, options, Identity.DEFAULTS));
 
         this.options.metersPerTile = this.options.metersPerTile || 100;
 
         this.back = new ContainerSurface({
             size: [this.options.width, this.options.height],
-            content: '<h2>Settings</h2>',
             properties: {
                 marginLeft: this.options.margin,
                 marginRight: this.options.margin
             },
-            classes: ['control-surface', 'settings']
+            classes: ['control-surface', 'identity']
         });
 
-        this._node.add(this.back);
-
         this._initTitle();
-        this._initGridButtons();
-        this._initRangeSlider();
-        this._initUndoButton();
-        this._initZoomButton();
-        this._initTileScaleTitle();
-        this._initCenterButton();
+        this._initSaveButton();
+        this._node.add(this.back);
         //   this._updateTileScaleTitle();
     }
 
-    Settings.DEFAULTS = {
-        width: SETTINGS_WIDTH,
+    Identity.DEFAULTS = {
+        width: IDENTITY_WIDTH,
         height: 150,
         buttonSize: 36,
         headingSize: 15,
@@ -71,14 +65,36 @@ define(function(require, exports, module) {
         buttonClasses: ['button']
     };
 
-    Settings.prototype = Object.create(View.prototype);
+    Identity.prototype = Object.create(View.prototype);
 
-    _.extend(Settings.prototype, {
+    _.extend(Identity.prototype, {
 
-        _initTitle: function() {
+        onSave: function(){
+            var Dialog = require('./Dialog');
+
+            var d = new Dialog();
+            var mod = new Modifier({origin: [0.5, 0.5]});
+
+            var dnode = require('./main').add(mod).add(d);
+
+            d.onSave = function(){
+                console.log('closing dlog');
+                d.hide(mod);
+            };
+
+            d.content.setContent(Tile.Tile.terrain().join("*\n"));
+            d.content.setProperties({
+                fontFamily: 'Courier',
+                fontSize: '8pt',
+                whiteSpace: 'pre'
+            })
+
+        },
+
+        _initTitle: function () {
 
             var title = new Surface({
-                content: 'Settings',
+                content: 'Identity',
                 size: [true, this.options.headingSize]
             });
             title.elementType = 'h2';
@@ -86,63 +102,38 @@ define(function(require, exports, module) {
             this.back.add(title);
         },
 
-        _rangeTitle: function() {
+        _rangeTitle: function () {
             return 'Zoom: ' + this.gridSize;
         },
 
-        _initUndoButton: function() {
-            var undoButton = new Surface({
-                content: 'Undo',
+        _initSaveButton: function () {
+            var saveButton = new Surface({
+                content: 'Save',
                 classes: ['button'],
                 size: [100, this.options.buttonHeight]
             });
 
-            undoButton.elementType = 'button';
+            saveButton.elementType = 'button';
 
-            undoButton.on('click', function() {
-                if (Tile.Tile.cache.length) {
-                    var world = window.$TILES;
-                    _.each(world.registries(), function(reg) {
-                        if (reg.has('tile')) {
-                            var tile = reg.getFirst('tile');
-                            tile.setTerrain('empty');
-                        }
-                    });
+            saveButton.on('click', this.onSave.bind(this));
 
-                    var cache = Tile.Tile.cache.pop();
-
-                    for (var n = 0; n < cache.length; n += 3) {
-                        var i = cache[n];
-                        var j = cache[n + 1];
-                        var terrain = cache [n + 2];
-
-                        var reg = world.getRegistry({i: i, j: j});
-
-                        if (reg.has('tile')) {
-                            var tile = reg.getFirst('tile');
-                            tile.setTerrain(terrain);
-                        }
-                    }
-                }
-            });
-
-            this.undoButtonNode = this.back.add(new Modifier({
+            this.saveButtonNode = this.back.add(new Modifier({
                 origin: [1, 1]
             }));
 
-            this.undoButtonNode.add(undoButton);
+            this.saveButtonNode.add(saveButton);
         },
 
-        _initCenterButton: function() {
-            var undoButton = new Surface({
+        _initCenterButton: function () {
+            var saveButton = new Surface({
                 content: 'Center',
                 classes: ['button'],
                 size: [100, this.options.buttonHeight]
             });
 
-            undoButton.elementType = 'button';
+            saveButton.elementType = 'button';
 
-            undoButton.on('click', function() {
+            saveButton.on('click', function () {
                 Tile.Tile.recenter();
                 display.center();
                 display.redraw();
@@ -153,10 +144,10 @@ define(function(require, exports, module) {
                 transform: Transform.translate(0, -this.options.buttonHeight - 5)
             }));
 
-            this.centerButtonNode.add(undoButton);
+            this.centerButtonNode.add(saveButton);
         },
 
-        _initRangeSlider: function() {
+        _initRangeSlider: function () {
 
             /* ------------ range slider ---------------- */
 
@@ -170,7 +161,7 @@ define(function(require, exports, module) {
                 value: this.gridSize
             });
 
-            function _setMin (value){
+            function _setMin(value) {
                 console.log('range slider ', value);
                 rangeSlider._currTarget.setAttribute('min', RANGE_MIN_SIZE);
                 rangeSlider._currTarget.setAttribute('max', RANGE_MAX_SIZE);
@@ -179,11 +170,11 @@ define(function(require, exports, module) {
 
             rangeSlider.on('deploy', _setMin);
 
-            rangeSlider.on('change', function(value) {
+            rangeSlider.on('change', function (value) {
                 var n = parseInt(value.target.value);
                 this.gridSize = n;
                 this._eventInput.emit('grid size', n);
-                display.setScale(n/100);
+                display.setScale(n / 100);
                 title.setContent(this._rangeTitle());
             }.bind(this));
 
@@ -243,7 +234,7 @@ define(function(require, exports, module) {
             })).add(maxLabel);
         },
 
-        _initGridButtons: function() {
+        _initGridButtons: function () {
 
             var hexButton = new ToggleButton({
                 content: 'Hexagons',
@@ -279,7 +270,7 @@ define(function(require, exports, module) {
             this.gridMode = 1;
         },
 
-        _initZoomButton: function() {
+        _initZoomButton: function () {
 
             this.zoomInButton = new ToggleButton({
                 size: [ZOOM_BUTTON_WIDTH, this.options.buttonHeight],
@@ -293,7 +284,7 @@ define(function(require, exports, module) {
 
         },
 
-        _initTileScaleTitle: function() {
+        _initTileScaleTitle: function () {
 
             var surface = new Surface({
                 content: 'meters per hex: ' + this.options.metersPerTile
@@ -308,7 +299,7 @@ define(function(require, exports, module) {
             })).add(surface);
         },
 
-        _updateTilescaleLabel: function(size) {
+        _updateTilescaleLabel: function (size) {
             if (size) {
                 this.options.metersPerTile = size;
             }
@@ -316,7 +307,7 @@ define(function(require, exports, module) {
             this.tileScaleTitle.setContent('meters per hex: ' + this.options.metersPerTile);
         },
 
-        onZoomIn: function() {
+        onZoomIn: function () {
 
             var self = this;
             var sizeChoices = [
@@ -324,7 +315,7 @@ define(function(require, exports, module) {
                     m: 2,
                     label: '2m/tile - house/room',
                     classes: ['tilescale', 'tilescale-2m'],
-                    click: function() {
+                    click: function () {
                         _changeSize(2);
                     }
                 },
@@ -332,7 +323,7 @@ define(function(require, exports, module) {
                     m: 10,
                     label: '10m/tile - block',
                     classes: ['tilescale', 'tilescale-10m'],
-                    click: function() {
+                    click: function () {
                         _changeSize(10);
                     }
                 },
@@ -340,7 +331,7 @@ define(function(require, exports, module) {
                     m: 100,
                     label: '100m/tile - town',
                     classes: ['tilescale', 'tilescale-100m'],
-                    click: function() {
+                    click: function () {
                         _changeSize(100);
                     }
                 },
@@ -348,7 +339,7 @@ define(function(require, exports, module) {
                     m: 1000,
                     label: '1km/tile - city',
                     classes: ['tilescale', 'tilescale-1km'],
-                    click: function() {
+                    click: function () {
                         _changeSize(1000);
                     }
                 },
@@ -356,7 +347,7 @@ define(function(require, exports, module) {
                     m: 10000,
                     label: '10km/tile - state',
                     classes: ['tilescale', 'tilescale-10km'],
-                    click: function() {
+                    click: function () {
                         _changeSize(10000);
                     }
                 },
@@ -364,7 +355,7 @@ define(function(require, exports, module) {
                     m: 100000,
                     label: '100km/tile - country',
                     classes: ['tilescale', 'tilescale-100km'],
-                    click: function() {
+                    click: function () {
                         _changeSize(100000);
                     }
                 }
@@ -395,7 +386,7 @@ define(function(require, exports, module) {
 
         },
 
-        onModeButton: function(button, mode) {
+        onModeButton: function (button, mode) {
             console.log('grid mode: ', mode);
             this.gridMode = mode;
 
@@ -403,10 +394,9 @@ define(function(require, exports, module) {
         }
     });
 
-
-    module.exports = new Settings({
+    module.exports = new Identity({
         color: CONTROL_BACK_COLOR,
-        height: SETTINGS_HEIGHT
+        height: IDENTITY_HEIGHT
     });
 
 });
