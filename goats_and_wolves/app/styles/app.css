@@ -1,0 +1,46 @@
+html {
+  background: #fff;
+}
+
+.backfaceVisibility {
+  -webkit-backface-visibility: visible;
+  backface-visibility: visible;
+}
+
+.goat {
+    background-image: url(/content/images/goat.png);
+    background-size: 100%
+}
+
+.grass {
+    background-image: url(/content/images/grass_1.png);
+    background-size: 100%
+}
+.grass.grass-1{
+    background-image: url(/content/images/grass_1.png);
+}
+.grass.grass-2{
+    background-image: url(/content/images/grass_2.png);
+}
+.grass.grass-3{
+    background-image: url(/content/images/grass_3.png);
+}
+.grass.grass-4{
+    background-image: url(/content/images/grass_4.png);
+}
+.grass.grass-5{
+    background-image: url(/content/images/grass_5.png);
+}
+
+.goat.eating {
+    background-image: url(/content/images/goat_eating.png);
+}
+
+html {
+    background-color: #113627;
+}
+
+.goat.dead{
+
+    background-image: url(/content/images/goat_dead.png);
+}

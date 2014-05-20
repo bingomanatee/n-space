@@ -125,7 +125,9 @@ _.extend(NSPACE.WanderBot.prototype, {
     },
 
     addScanRule: function(dims, reductor) {
-        this.scanRules.push(new NSPACE.WanderBotScanRule(this, dims, reductor));
+        var rule = new NSPACE.WanderBotScanRule(this, dims, reductor);
+        this.scanRules.push(rule);
+        return rule;
     },
 
     scan: function() {
@@ -152,7 +154,12 @@ _.extend(NSPACE.WanderBot.prototype, {
     },
 
     move: function() {
-        var openSpace = this.scan();
+        var openSpace = false;
+        try {
+             openSpace = this.scan();
+        } catch(err){
+
+        }
 
         if (!openSpace) {
             return;
