@@ -183,10 +183,13 @@ _.extend(NSPACE.World.prototype, {
     },
 
     getRegistry: function(loc) {
-        this.goodLoc(loc, 'getRegistry');
+        this.locInRange(loc, true);
         var self = this;
         var coords = _.pluck(this.dimArray, 'name');
         var reg = _.reduce(coords, function(cells, name) {
+            if (!cells){
+                throw 'no cells for ' + name;
+            }
             if (!(loc.hasOwnProperty(name))) {
                 throw ('World.getRegistry:loc missing property ' + name);
             }
@@ -197,7 +200,16 @@ _.extend(NSPACE.World.prototype, {
             var dim = self.dims[name];
             // console.log('getting registry from index %s - %s of %s', index, dim[0], name);
             index -= dim[0];
-            return cells[index];
+            try {
+                if (index >= 0 && index <= cells.length && cells[index]){
+                    return cells[index];
+                } else {
+                    throw 'out of bound index for ' + name + ': ' + index;
+                }
+            } catch (e){
+                console.log('retrieval error: ', e);
+                throw e;
+            }
         }, this.cells);
 
         if (reg.t !== 'Register') {

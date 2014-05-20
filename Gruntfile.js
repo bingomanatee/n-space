@@ -1,4 +1,4 @@
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
     var files = [
         'src/FamousEventEmitter.js',
@@ -41,9 +41,10 @@ module.exports = function (grunt) {
             }
         },
         copy: {
-            'into-tiles': {
+            'into-demos': {
                 files: {
-                    'tiles/app/src/n-space.js': 'n-space.js'
+                    'tiles/app/src/n-space.js': 'n-space.js',
+                    'goats_and_wolves/app/src/n-space.js': 'n-space.js'
                 }
             }
         }
@@ -55,5 +56,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-copy');
 
 // the default task can be run just by typing "grunt" on the command line
-    grunt.registerTask('default', ['jshint:beforeconcat', 'concat:base', 'jshint:afterconcat', 'umd:all', 'concat:into_test_site', 'copy:into-tiles']);
+    grunt.registerTask('default', ['jshint:beforeconcat', 'concat:base', 'jshint:afterconcat', 'umd:all', 'concat:into_test_site', 'copy:into-demos']);
 };
